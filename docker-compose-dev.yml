@@ -1,11 +1,11 @@
 services:
   arg_aut_backend:
     build:
-      context: ./core_backend
-      dockerfile: ../../dockerfiles/dev/django/dockerfile
+      context: .
+      dockerfile: dockerfiles/dev/django/dockerfile
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./core_backend:/app
+      - ./core_backend:/usr/src/app
     ports:
       - "8000:8000"
     env_file:

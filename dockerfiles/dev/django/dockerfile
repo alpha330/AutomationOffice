@@ -7,44 +7,36 @@ FROM python:3.11-slim
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
-# Set environment variables for locale (زبان و تنظیمات منطقه‌ای فارسی)
-ENV LANG fa_IR.UTF-8
-ENV LANGUAGE fa_IR:fa
-ENV LC_ALL fa_IR.UTF-8
+# Set environment variables for locale (استفاده از لوکیل پیش‌فرض)
+ENV LANG C.UTF-8
+ENV LANGUAGE C.UTF-8
+ENV LC_ALL C.UTF-8
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Install system dependencies, including locales for Persian support
-# نصب ابزارهای لازم برای تنظیمات زبان و پشتیبانی از فارسی
+# Install system dependencies (فقط پکیج‌های ضروری)
 RUN apt-get update && \
-    apt-get install -y locales && \
-    # فعال‌سازی لوکیل فارسی UTF-8
-    sed -i -e 's/# fa_IR.UTF-8 UTF-8/fa_IR.UTF-8 UTF-8/' /etc/locale.gen && \
-    # تولید لوکیل‌ها
-    dpkg-reconfigure --frontend=noninteractive locales && \
-    # به‌روزرسانی لوکیل پیش‌فرض سیستم
-    update-locale LANG=fa_IR.UTF-8 && \
-    # پاک کردن کش apt برای کاهش حجم ایمیج
+    apt-get install -y && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy the requirements file into the container at /app
-# این فایل باید در ریشه پروژه جنگو شما باشد (core_backend/requirements.txt)
-COPY ./requirements.txt /app/requirements.txt
-
 # Install any needed packages specified in requirements.txt
-# --no-cache-dir برای کاهش حجم ایمیج
+COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code into the container at /app
-# این دستور محتوای پوشه context (که در docker-compose.yml مشخص می‌شود، یعنی core_backend) را کپی می‌کند.
-# در محیط توسعه، این توسط volume mount در docker-compose.yml بازنویسی می‌شود.
-COPY ./core_backend/ /app/
-COPY ./envs/dev/django/.env /app/
-# Expose port 8000 to allow communication to the Django development server
+COPY ./core_backend/ /usr/src/app
+COPY ./envs/dev/django/.env /usr/src/app
+
+# Install netcat-openbsd for checking database readiness
+RUN apt-get update && \
+    apt-get install -y netcat-openbsd && \
+    rm -rf /var/lib/apt/lists/*
+
+# Expose port 8000
 EXPOSE 8000
 
-# Define the command to run the application
-# این دستور سرور توسعه جنگو را اجرا می‌کند.
-# نکته: برای محیط پروداکشن، از Gunicorn یا uWSGI استفاده کنید.
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Wait for database to be ready
+COPY ./dockerfiles/dev/django/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
