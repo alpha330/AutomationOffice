@@ -1,12 +1,13 @@
 from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser,AllowAny
 from .models import User, Profile
 from .serializers import UserSerializer, ProfileSerializer, RegisterSerializer, LoginSerializer, PasswordResetSerializer
 from django.core.mail import send_mail
 from django.conf import settings
 import uuid
+import re
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -30,6 +31,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]  # اجازه دادن به همه بدون احراز هویت
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
