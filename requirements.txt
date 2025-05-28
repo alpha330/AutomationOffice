@@ -1,0 +1,14 @@
+Django
+djangorestframework
+gunicorn
+psycopg2-binary
+celery
+redis
+python-dotenv
+djangorestframework-simplejwt
+jdatetime
+channels
+channels_redis
+django-cors-headers
+pytest
+django-debug-toolbar
