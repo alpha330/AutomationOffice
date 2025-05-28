@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "accounting"
+    "accounting",    
+    'rest_framework.authtoken',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
@@ -54,6 +56,15 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
 
 ROOT_URLCONF = "core_backend.urls"
 
@@ -118,6 +129,16 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
+
+# Email server configuration
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp4dev")
+EMAIL_PORT = os.getenv("EMAIL_PORT", 25)
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL",False)
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS",False)
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER","")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD","")
 
 
 # Static files (CSS, JavaScript, Images)

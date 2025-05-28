@@ -5,6 +5,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from accounting.validators import validate_iranian_cellphone_number
+import uuid
 
 # USER MODEL FOR EMARKET IN APP ACCOUNTING
 
@@ -57,7 +58,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
-
+    token = models.UUIDField(null=True, blank=True, unique=True, default=uuid.uuid4)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
@@ -77,6 +78,9 @@ class Profile(models.Model):
     )
     image = models.ImageField(
         upload_to="profile/", default="img/mockups/default_man.png"
+    )
+    signitures = models.ImageField(
+        upload_to="signiturs/", default="img/mockups/default_man.png"
     )
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

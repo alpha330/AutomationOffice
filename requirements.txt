@@ -13,3 +13,6 @@ django-cors-headers
 pytest
 django-debug-toolbar
 Pillow
+django-contrib-sessions
+jdatetime
+drf-yasg

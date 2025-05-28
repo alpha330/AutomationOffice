@@ -29,7 +29,20 @@ services:
     command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis_data_dev:/data
+  
+  smtp4dev:
+      image: rnwood/smtp4dev:v3
+      restart: always
+      ports:
+        - '5001:80'
+        - '25:25'
+        - '143:143'
+      volumes:
+        - smtp4dev-data:/smtp4dev
+      environment:
+        - ServerOptions__HostName=smtp4dev
 
 volumes:
+  smtp4dev-data:
   postgres_data_dev:
   redis_data_dev:
