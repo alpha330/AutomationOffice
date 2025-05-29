@@ -13,7 +13,38 @@ services:
     depends_on:
       - db_dev
       - redis_dev
-
+  worker_arg_celery:
+    hostname: "arg-celery"
+    container_name: worker_arg_aut_celery
+    build: 
+      context: .
+      dockerfile: dockerfiles/dev/django/dockerfile     
+    command: celery -A core_backend worker --loglevel=info
+    env_file:
+      - ./envs/dev/django/.env
+    volumes:
+      - ./core_backend:/usr/src/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - arg_aut_backend
+      - redis_dev
+    
+  worker_beats_arg_celery:
+    hostname: "arg-celery-beat"
+    container_name: worker_beats_arg_aut_celery
+    build: 
+      context: .
+      dockerfile: dockerfiles/dev/django/dockerfile       
+    command: celery -A core_backend beat --loglevel=info
+    env_file:
+      - ./envs/dev/django/.env
+    volumes:
+      - ./core_backend:/usr/src/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - arg_aut_backend
+      - redis_dev
+    
   db_dev:
     image: postgres:15-alpine
     volumes:
@@ -26,7 +57,12 @@ services:
 
   redis_dev:
     image: redis:7-alpine
-    command: redis-server --requirepass ${REDIS_PASSWORD}
+    command : redis-server --port 6380 --save 60 1 --loglevel warning  
+    ports:
+       - "6380:6380"    
+    environment:
+      - TZ=Asia/Tehran
+      - ServerOptions__HostName=accountsotaredis
     volumes:
       - redis_data_dev:/data
   

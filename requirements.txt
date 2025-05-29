@@ -15,3 +15,13 @@ django-debug-toolbar
 Pillow
 jdatetime
 drf-yasg
+ghasedakpack
+django-mail-templated
+celery[redis]
+django-celery-beat
+django-celery-results
+celery
+django_extensions
+django-filter
+django-redis
+requests

@@ -22,6 +22,7 @@ RUN apt-get update && \
 
 # Install any needed packages specified in requirements.txt
 COPY ./requirements.txt /usr/src/app/requirements.txt
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code into the container at /app
@@ -34,18 +35,12 @@ COPY ./envs/dev/django/.env /usr/src/app/.env
 # Install netcat-openbsd and bash
 RUN apt-get update && \
     apt-get install -y netcat-openbsd bash && \
-    rm -rf /var/lib/apt/lists/*
-
-# Debug: Check if files are copied
-RUN ls -la /usr/src/app || echo "Directory /usr/src/app is empty!"
-RUN ls -la /usr/src/app/entrypoint-script || echo "entrypoint-script not found after COPY!"
-RUN ls -la /usr/src/app/.env || echo ".env file not found after COPY!"
-RUN chmod +x /usr/src/app/entrypoint-script
-RUN cat /usr/src/app/entrypoint-script || echo "entrypoint-script is empty or not readable!"
-RUN cat /usr/src/app/.env || echo ".env is empty or not readable!"
+    rm -rf /var/lib/apt/lists/* 
+    
+RUN export LANG=C.UTF-8
+RUN export LANGUAGE=C.UTF-8
+RUN export LC_ALL=C.UTF-8
 
 # Expose port 8000
 EXPOSE 8000
 
-# Set entrypoint
-ENTRYPOINT ["/usr/src/app/entrypoint-script"]

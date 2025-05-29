@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Profile, User
+from .models import Profile, User,TempCodeAuthenticating
 from django.contrib.auth import get_user_model
 from django.contrib.sessions.models import Session
 import jdatetime
@@ -65,6 +65,27 @@ class SessionAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+@admin.register(TempCodeAuthenticating)
+class AdminModelTempCodeAuthenticating(admin.ModelAdmin):
+
+    list_display = [
+        "id",
+        "user",
+        "code",
+        "created_date",
+        "updated_date",
+        "expire_time",
+    ]
+
+    ordering = [
+        "id",
+        "user",
+        "code",
+        "created_date",
+        "updated_date",
+        "expire_time",
+    ]
 
 admin.site.register(Profile, CustomProfileAdmin)
 admin.site.register(User, CustomUserAdmin)
