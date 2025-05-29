@@ -6,6 +6,13 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from accounting.validators import validate_iranian_cellphone_number
 import uuid
+import random
+from django.contrib.auth.hashers import make_password, check_password
+from django.utils import timezone
+from datetime import timedelta
+from django.urls import reverse
+from django.core.exceptions import ObjectDoesNotExist
+
 
 # USER MODEL FOR EMARKET IN APP ACCOUNTING
 
@@ -111,7 +118,7 @@ class TempCodeAuthenticating(models.Model):
     expire_time = models.DateTimeField(null=True, blank=True)  # زمان انقضای کد
 
     def __str__(self):
-        return f"Temp code for {self.user.mobile_number}"
+        return f"Temp code for {self.user.email} - {self.code}"
 
     def save(self, *args, **kwargs):
         # تولید یک کد 5 رقمی تصادفی

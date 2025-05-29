@@ -1,27 +1,48 @@
+# Core Django and REST Framework
 Django
 djangorestframework
 gunicorn
+
+# Database
 psycopg2-binary
+
+# Celery and Message Broker
 celery
-redis
-python-dotenv
-djangorestframework-simplejwt
-jdatetime
-channels
-channels_redis
-django-cors-headers
-pytest
-django-debug-toolbar
-Pillow
-jdatetime
-drf-yasg
-ghasedakpack
-django-mail-templated
 celery[redis]
 django-celery-beat
 django-celery-results
-celery
-django_extensions
-django-filter
+redis
 django-redis
+
+# Authentication and Security
+djangorestframework-simplejwt
+
+# Date and Localization
+jdatetime
+
+# WebSockets
+channels
+channels_redis
+
+# Testing and Debugging
+pytest
+django-debug-toolbar
+
+# Images and Media
+Pillow
+
+# API Documentation
+drf-yasg
+
+# SMS
+ghasedakpack
+
+# Email
+django-mail-templated
+
+# Development Tools
+django-extensions
+django-filter
+django-cors-headers
+python-dotenv
 requests

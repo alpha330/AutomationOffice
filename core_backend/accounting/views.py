@@ -2,12 +2,16 @@ from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, IsAdminUser,AllowAny
-from .models import User, Profile
+from .models import User, Profile,TempCodeAuthenticating
 from .serializers import UserSerializer, ProfileSerializer, RegisterSerializer, LoginSerializer, PasswordResetSerializer
 from django.core.mail import send_mail
 from django.conf import settings
 import uuid
 import re
+from django.shortcuts import get_object_or_404
+from .tasks import sendEmail
+from rest_framework.response import Response
+from rest_framework import status
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -29,15 +33,43 @@ class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
 
-class RegisterView(generics.CreateAPIView):
-    serializer_class = RegisterSerializer
-    permission_classes = [AllowAny]  # اجازه دادن به همه بدون احراز هویت
+class RegisterView(generics.GenericAPIView):
+    """
+    This Class For Registration Inherients fron GenericApi
+    can do POST for Api and use determine serializer class
+    """
 
+    serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response({"message": "User registered successfully", "user_id": user.id}, status=status.HTTP_201_CREATED)
+        """
+        this class for process registration flow
+        validate posted values whit serializer
+        and response whit status code
+        """
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            email = serializer.validated_data["email"]
+            user_obj = get_object_or_404(User,email=email)
+            temp_code = TempCodeAuthenticating(user=user_obj)
+            raw_code = temp_code.save()
+            sendEmail.delay(
+                template="email/registration_temp_code.tpl",
+                context={"temp_code": raw_code},
+                from_email="IT_department@nakhlearg.ir",
+                recipient_list=(email,),
+            )
+            data = {
+                "email": email, 
+                "message": "کاربر با موفقیت ثبت شد. کد فعالسازی موقت به ایمیل ثبت شده ارسال شد.",
+                "status": "success",
+                "code": "user_created",
+                "Error": False
+
+                }
+            return Response(data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer

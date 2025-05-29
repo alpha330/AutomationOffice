@@ -2,8 +2,11 @@ from rest_framework import serializers
 from .models import User, Profile, UserType
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
+from django.contrib.auth.password_validation import validate_password
+from django.core import exceptions
 import uuid
 import re
+from django.shortcuts import get_object_or_404
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,39 +19,66 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'first_name', 'last_name', 'phone_number', 'image', 'created_date']
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=8)
-    confirm_password = serializers.CharField(write_only=True, min_length=8)
+    """
+    this class handle Registration new users
+    password_1 = repeated main password
+    mobile_number = user mobile number required as username
+    email = user email address require
+
+    """
+
+    password_1 = serializers.CharField(max_length=255, write_only=True)
 
     class Meta:
+        """
+        mother class or meta inheriented from User defined class
+        in auth.models
+        with fields get from indexs of user table
+        """
+
         model = User
-        fields = ['email', 'password', 'confirm_password', 'type']
+        fields = ["email", "password", "password_1"]
 
-    def validate(self, data):
-        # چک کردن تطابق پسوردها
-        if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError({"confirm_password": "Passwords do not match."})
-
-        # چک کردن پیچیدگی پسورد
-        password = data['password']
-        if not re.search(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', password):
-            raise serializers.ValidationError({
-                "password": (
-                    "Password must be at least 8 characters long and include at least one "
-                    "lowercase letter, one uppercase letter, one number, and one special character (@$!%*?&)."
-                )
-            })
-
-        return data
+    def validate(self, attrs):
+        """
+        this section about validating policy of passwords
+        complexity like minimum character
+        special charecters and uppercase
+        """
+        emailCheck = User.objects.filter(email=attrs.get("email")).exists()
+        if emailCheck:
+            raise serializers.ValidationError(
+                {
+                    "message": "این ایمیل قبلا ثبت شده است",
+                    "Error": True,
+                    "status": 400,
+                    "code": "email_already_exists"
+                }
+            )
+        if attrs.get("password") != attrs.get("password_1"):
+            raise serializers.ValidationError(
+                {
+                    "message": "رمز عبور و تکرار رمز عبور یکسان نیست",             
+                    "Error": True,
+                    "status": 400,
+                    "code": "password_mismatch"                    
+                 }
+            )
+        
+        try:
+            validate_password(attrs.get("password"))
+        except exceptions.ValidationError as e:
+            raise serializers.ValidationError({"password": list(e.messages)})
+        return super().validate(attrs)
 
     def create(self, validated_data):
-        # حذف confirm_password از داده‌ها قبل از ذخیره
-        validated_data.pop('confirm_password')
-        user = User.objects.create_user(
-            email=validated_data['email'],
-            password=validated_data['password'],
-            type=validated_data.get('type', UserType.client.value)
-        )
-        return user
+        """
+        this defination to develope user via create_user() def
+        in auth.models by inserted data by client
+
+        """
+        validated_data.pop("password_1", None)
+        return User.objects.create_user(**validated_data)
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
