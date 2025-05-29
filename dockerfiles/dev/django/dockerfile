@@ -26,17 +26,26 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code into the container at /app
 COPY ./core_backend/ /usr/src/app
-COPY ./envs/dev/django/.env /usr/src/app
 
-# Install netcat-openbsd for checking database readiness
+# Copy entrypoint and .env with debugging
+COPY ./dockerfiles/dev/django/entrypoint-script /usr/src/app/entrypoint-script
+COPY ./envs/dev/django/.env /usr/src/app/.env
+
+# Install netcat-openbsd and bash
 RUN apt-get update && \
-    apt-get install -y netcat-openbsd && \
+    apt-get install -y netcat-openbsd bash && \
     rm -rf /var/lib/apt/lists/*
+
+# Debug: Check if files are copied
+RUN ls -la /usr/src/app || echo "Directory /usr/src/app is empty!"
+RUN ls -la /usr/src/app/entrypoint-script || echo "entrypoint-script not found after COPY!"
+RUN ls -la /usr/src/app/.env || echo ".env file not found after COPY!"
+RUN chmod +x /usr/src/app/entrypoint-script
+RUN cat /usr/src/app/entrypoint-script || echo "entrypoint-script is empty or not readable!"
+RUN cat /usr/src/app/.env || echo ".env is empty or not readable!"
 
 # Expose port 8000
 EXPOSE 8000
 
-# Wait for database to be ready
-COPY ./dockerfiles/dev/django/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+# Set entrypoint
+ENTRYPOINT ["/usr/src/app/entrypoint-script"]
