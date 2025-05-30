@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Profile, User,TempCodeAuthenticating
+from .models import Profile, User,TempCodeAuthenticating,UserLoginDevice
 from django.contrib.auth import get_user_model
 from django.contrib.sessions.models import Session
 import jdatetime
@@ -9,6 +9,7 @@ import jdatetime
 
 User = get_user_model()
 
+@admin.register(User)
 class CustomUserAdmin(UserAdmin):
     model = User
     list_display = ("id", "email", "is_superuser", "is_active", "is_verified")
@@ -55,10 +56,12 @@ class CustomUserAdmin(UserAdmin):
         return jdatetime.datetime.fromgregorian(datetime=obj.updated_date).strftime('%Y/%m/%d %H:%M:%S')
     updated_date_display.short_description = "تاریخ به‌روزرسانی (شمسی)"
 
+@admin.register(Profile)
 class CustomProfileAdmin(admin.ModelAdmin):
     list_display = ("id", "user", "first_name", "last_name", "phone_number")
     search_fields = ("user__email", "first_name", "last_name", "phone_number")
 
+@admin.register(Session)
 class SessionAdmin(admin.ModelAdmin):
     list_display = ["session_key", "expire_date"]
     readonly_fields = ["session_key", "expire_date"]
@@ -87,6 +90,24 @@ class AdminModelTempCodeAuthenticating(admin.ModelAdmin):
         "expire_time",
     ]
 
-admin.site.register(Profile, CustomProfileAdmin)
-admin.site.register(User, CustomUserAdmin)
-admin.site.register(Session, SessionAdmin)
+@admin.register(UserLoginDevice)
+class AdminModelUserLoginDevice(admin.ModelAdmin):
+
+    list_display = [
+        "id",
+        "user",
+        "ip_address",
+        "browser",
+        "device",
+        "created_at",
+    ]
+
+    ordering = [
+        "id",
+        "user",
+        "ip_address",
+        "browser",
+        "device",
+        "created_at",
+    ]
+

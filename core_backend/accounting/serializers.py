@@ -85,10 +85,13 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        user = authenticate(email=data['email'], password=data['password'])
-        if user and user.is_active:
-            return user
-        raise serializers.ValidationError("Invalid credentials")
+        try:
+            user = authenticate(email=data['email'], password=data['password'])
+            if user and user.is_active:
+                return user
+        except exceptions.ValidationError as e:
+            raise serializers.ValidationError({"login": list(e.messages)})
+        return super().validate(data)
 
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField()

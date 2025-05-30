@@ -2,7 +2,7 @@ from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, IsAdminUser,AllowAny
-from .models import User, Profile,TempCodeAuthenticating
+from .models import User, Profile,TempCodeAuthenticating,UserLoginDevice
 from .serializers import UserSerializer, ProfileSerializer, RegisterSerializer, LoginSerializer, PasswordResetSerializer,ActivationTempCodeSerializer
 from django.core.mail import send_mail
 from django.conf import settings
@@ -12,6 +12,7 @@ from django.shortcuts import get_object_or_404
 from .tasks import sendEmail
 from rest_framework.response import Response
 from rest_framework import status
+from user_agents import parse
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -73,13 +74,43 @@ class RegisterView(generics.GenericAPIView):
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
-
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({"token": token.key, "user_id": user.id}, status=status.HTTP_200_OK)
+        try:
+            serializer.is_valid(raise_exception=True)
+            user = serializer.validated_data
+            token, created = Token.objects.get_or_create(user=user)
+            ip_address = self.request.META.get("REMOTE_ADDR")
+            user_agent = parse(self.request.META["HTTP_USER_AGENT"])
+            browser = user_agent.browser.family
+            device = user_agent.device.family
+            UserLoginDevice.objects.create(
+                 user=user,
+                 ip_address=ip_address,
+                 browser=browser,
+                 device=device,
+             )
+            return Response({
+                "token": token.key, 
+                "user_id": user.id,
+                "message": "ورود تایید شد",
+                "status": "success",
+                "code": "login_done",
+                "Error": False
+            }, 
+            status=status.HTTP_200_OK
+            )
+        except :
+            return Response({
+                "message":"نام کاربری یا رمز عبور اشتباه است. ورود نا موفق ", 
+                "status": "fail",
+                "code": "Wrong username or password",
+                "Error": True
+            }, 
+            status=status.HTTP_401_UNAUTHORIZED
+            )
+    
 
 class ForgotPasswordView(generics.GenericAPIView):
     serializer_class = PasswordResetSerializer

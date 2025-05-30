@@ -73,6 +73,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+def avatar_media_path(instance, filename):
+    return f"auth/users/profile/{instance.user.email}/avatar/{filename}"
+
+def signuture_media_path(instance, filename):
+    return f"auth/users/profile/{instance.user.email}/signuture/{filename}"
 
 class Profile(models.Model):
     user = models.OneToOneField(
@@ -84,10 +90,10 @@ class Profile(models.Model):
         max_length=12, validators=[validate_iranian_cellphone_number]
     )
     image = models.ImageField(
-        upload_to="profile/", default="img/mockups/default_man.png"
+        upload_to=avatar_media_path, default="img/mockups/default_man.png"
     )
     signitures = models.ImageField(
-        upload_to="signiturs/", default="img/mockups/default_man.png"
+        upload_to=signuture_media_path, default="img/mockups/default_man.png"
     )
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -158,3 +164,27 @@ class TempCodeAuthenticating(models.Model):
 
     def get_api_absloute_url(self):
         return reverse("auths:api-v1:codes-viewset-detail",kwargs={"pk":self.id})
+    
+class UserLoginDevice(models.Model):
+    """
+    This Model To Store Loged In User Attrebutes
+    Help To Mange Online User at Same Time on Multiple Devices
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="login_devices")
+    ip_address = models.CharField(max_length=45)
+    browser = models.CharField(max_length=100)
+    device = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        """
+        This Definitain Work To Return The Main Ident Of Model on Admins Or Another
+        playses like as admins
+        """
+        return f"{self.user.email} - {self.device} ({self.browser})"
+    
+    def get_api_absloute_url(self):
+        return reverse("auths:api-v1:devices-viewset-detail",kwargs={"pk":self.id})
+
+

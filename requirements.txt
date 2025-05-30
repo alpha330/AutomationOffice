@@ -2,6 +2,7 @@
 Django
 djangorestframework
 gunicorn
+user_agents
 
 # Database
 psycopg2-binary
