@@ -18,6 +18,11 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ['id', 'user', 'first_name', 'last_name', 'phone_number', 'image', 'created_date']
 
+class ProfileSerializerUpdate(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = [ 'first_name', 'last_name', 'phone_number', 'image']
+
 class RegisterSerializer(serializers.ModelSerializer):
     """
     this class handle Registration new users

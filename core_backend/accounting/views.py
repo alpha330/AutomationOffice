@@ -1,9 +1,10 @@
 from rest_framework import viewsets, generics, status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, IsAdminUser,AllowAny
 from .models import User, Profile,TempCodeAuthenticating,UserLoginDevice
-from .serializers import UserSerializer, ProfileSerializer, RegisterSerializer, LoginSerializer, PasswordResetSerializer,ActivationTempCodeSerializer
+from .serializers import UserSerializer, ProfileSerializer, RegisterSerializer, LoginSerializer, PasswordResetSerializer,ActivationTempCodeSerializer,ProfileSerializerUpdate
 from django.core.mail import send_mail
 from django.conf import settings
 import uuid
@@ -11,8 +12,9 @@ import re
 from django.shortcuts import get_object_or_404
 from .tasks import sendEmail
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status,permissions
 from user_agents import parse
+from rest_framework.exceptions import NotFound
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -30,9 +32,82 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.save()
 
 class ProfileViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAdminUser]
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated]
+
+class MyProfileView(generics.RetrieveAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        try:
+            return Profile.objects.get(user=self.request.user)
+        except Profile.DoesNotExist:
+            raise NotFound("پروفایلی برای این کاربر یافت نشد.")
+        
+class MyProfileUpdate(generics.GenericAPIView):
+    
+    model = Profile
+    serializer_class = ProfileSerializerUpdate
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def patch(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            first_name = serializer.data.get("first_name")
+            last_name = serializer.data.get("last_name")
+            phone_number = serializer.data.get("phone_number")
+            if first_name and last_name and phone_number:
+                user_id = request.user.email
+                user_obj = User.objects.get(email=user_id)
+                profile_obj = Profile.objects.filter(user=user_obj).first()
+                if profile_obj:
+                    profile_obj.first_name = first_name
+                    profile_obj.last_name = last_name
+                    profile_obj.phone_number = phone_number
+                    profile_obj.save()
+                    if serializer.data.get("image"):
+                        profile_obj.image = serializer.data.get("image")
+                        profile_obj.save()
+                    if serializer.data.get("signutures"):
+                        profile_obj.signitures = serializer.data.get("signutures")
+                        profile_obj.save()
+                    return Response({
+                        "message": "پروفایل بروزرسانی شد",
+                        "email":user_obj.email,
+                        "error":False,
+                        "status":"success",
+                        "code":"Profile updated"
+                        },
+                        status=status.HTTP_202_ACCEPTED
+                        )
+                else:
+                    return Response({
+                        "message": "پروفایلی یافت نشد",
+                        "error":True,
+                        "status":"fail",
+                        "code":"Profile not found"
+                        },
+                        status=status.HTTP_425_TOO_EARLY)
+                return Response({
+                    "message": "پروفایل بروزرسانی شد",
+                    "email":user_obj.email,
+                    "error":False,
+                    "status":"success",
+                    "code":"Profile updated"
+                    },
+                    status=status.HTTP_202_ACCEPTED
+                    )            
+            else:
+                return Response({
+                "message": "پروفایلی یافت نشد",
+                "error":True,
+                "status":"fail",
+                "code":"Profile not found"
+                },
+                status=status.HTTP_425_TOO_EARLY)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterView(generics.GenericAPIView):
     """
@@ -188,3 +263,26 @@ class ActivationApiCodeView(generics.GenericAPIView):
                 },
                 status=status.HTTP_425_TOO_EARLY)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            request.user.auth_token.delete()
+            device = UserLoginDevice.objects.filter(user=request.user)
+            if device.exists():
+                device.delete()  # حذف دستگاه‌های کاربر در صورت وجود
+            return Response({
+                "message": "با موفقیت خارج شدید.",
+                "status": "success",
+                "code": "logout_done",
+                "Error": False
+            }, status=status.HTTP_204_NO_CONTENT)
+        except (AttributeError, Token.DoesNotExist):
+            return Response({
+                "message": "شما وارد نشده‌اید یا توکن نامعتبر است.",
+                "status": "fail",
+                "code": "logout_failed",
+                "Error": True
+            }, status=status.HTTP_400_BAD_REQUEST)
