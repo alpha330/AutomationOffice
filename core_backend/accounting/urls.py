@@ -10,6 +10,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('register/', views.RegisterView.as_view(), name='register'),
     path('login/', views.LoginView.as_view(), name='login'),
+    path('tempcode/verify/', views.ActivationApiCodeView.as_view(), name='tempcode_verify'),
     path('forgot-password/', views.ForgotPasswordView.as_view(), name='forgot_password'),
     path('reset-password/<str:token>/', views.ResetPasswordView.as_view(), name='reset_password'),
 ]

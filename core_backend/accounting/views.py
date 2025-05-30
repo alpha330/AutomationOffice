@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, IsAdminUser,AllowAny
 from .models import User, Profile,TempCodeAuthenticating
-from .serializers import UserSerializer, ProfileSerializer, RegisterSerializer, LoginSerializer, PasswordResetSerializer
+from .serializers import UserSerializer, ProfileSerializer, RegisterSerializer, LoginSerializer, PasswordResetSerializer,ActivationTempCodeSerializer
 from django.core.mail import send_mail
 from django.conf import settings
 import uuid
@@ -112,3 +112,48 @@ class ResetPasswordView(generics.GenericAPIView):
             return Response({"message": "Password reset successfully"}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+        
+class ActivationApiCodeView(generics.GenericAPIView):
+    
+    model = User
+    serializer_class = ActivationTempCodeSerializer
+    permission_classes = [AllowAny]
+    
+    def put(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            temp_code = serializer.data.get("temp_code")
+            user_id = TempCodeAuthenticating.verify_code(raw_code=temp_code)
+            code_model = TempCodeAuthenticating.objects.filter(user=user_id).order_by("-created_date").first()
+            if user_id:
+                user_obj = User.objects.get(email=user_id)
+                if user_obj.is_active:
+                    return Response({
+                        "message": "اکانت فعال بوده است",
+                        "email":user_obj.email,
+                        "error":True,
+                        "status":"fail",
+                        "code":"activated_before"
+                        })
+                else:
+                    user_obj.is_active = True
+                    user_obj.save()
+                    TempCodeAuthenticating.objects.filter(user=user_id).delete()
+                    return Response({
+                        "message": "اکانت فعال شد",
+                        "email":user_obj.email,
+                        "error":False,
+                        "status":"success",
+                        "code":"acivated"
+                        },
+                        status=status.HTTP_202_ACCEPTED
+                        )            
+            else:
+                return Response({
+                "message": "کد منقضی شده است",
+                "error":True,
+                "status":"fail",
+                "code":"temp_code_disqualify"
+                },
+                status=status.HTTP_425_TOO_EARLY)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

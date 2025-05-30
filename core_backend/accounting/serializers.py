@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Profile, UserType
+from .models import User, Profile, TempCodeAuthenticating
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.password_validation import validate_password
@@ -97,3 +97,9 @@ class PasswordResetSerializer(serializers.Serializer):
         if not User.objects.filter(email=data['email']).exists():
             raise serializers.ValidationError("User with this email does not exist")
         return data
+    
+class ActivationTempCodeSerializer(serializers.Serializer):
+    """
+    This class is used to serialize the User model in order Activate user instance
+    """
+    temp_code = serializers.IntegerField(required=True)
