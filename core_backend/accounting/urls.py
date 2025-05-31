@@ -5,6 +5,8 @@ from . import views
 router = DefaultRouter()
 router.register(r'users', views.UserViewSet, basename='user')
 router.register(r'profiles', views.ProfileViewSet, basename='profile')
+router.register(r'TempCodes', views.TempAuthenticatingViewSet, basename='TempCode')
+router.register(r'UseLoginDevices', views.UserLoginDeviceViewSet, basename='UserLoginDevice')
 
 urlpatterns = [
     path('', include(router.urls)),

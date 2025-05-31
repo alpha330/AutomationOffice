@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, IsAdminUser,AllowAny
 from .models import User, Profile,TempCodeAuthenticating,UserLoginDevice
-from .serializers import UserSerializer, ProfileSerializer, RegisterSerializer, LoginSerializer, PasswordResetSerializer,ActivationTempCodeSerializer,ProfileSerializerUpdate
+from .serializers import UserSerializer, ProfileSerializer, RegisterSerializer, LoginSerializer, PasswordResetSerializer,ActivationTempCodeSerializer,ProfileSerializerUpdate,TempAuthenticatingSerializer,UserLoginDeviceSerializer
 from django.core.mail import send_mail
 from django.conf import settings
 import uuid
@@ -29,6 +29,36 @@ class UserViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         if not self.request.user.is_superuser:
             raise PermissionError("Only superusers can create users")
+        serializer.save()
+
+class TempAuthenticatingViewSet(viewsets.ModelViewSet):
+    queryset = TempCodeAuthenticating.objects.all()
+    serializer_class = TempAuthenticatingSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return TempCodeAuthenticating.objects.all()
+        return TempCodeAuthenticating.objects.filter(user=self.request.user.email)
+
+    def perform_create(self, serializer):
+        if not self.request.user.is_superuser:
+            raise PermissionError("Only superusers can create TempCodeAuthenticating")
+        serializer.save()
+
+class UserLoginDeviceViewSet(viewsets.ModelViewSet):
+    queryset = UserLoginDevice.objects.all()
+    serializer_class = UserLoginDeviceSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return UserLoginDevice.objects.all()
+        return UserLoginDevice.objects.filter(user=self.request.user.email)
+
+    def perform_create(self, serializer):
+        if not self.request.user.is_superuser:
+            raise PermissionError("Only superusers can create UserLoginDevice")
         serializer.save()
 
 class ProfileViewSet(viewsets.ModelViewSet):

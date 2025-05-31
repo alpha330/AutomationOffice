@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Profile, TempCodeAuthenticating
+from .models import User, Profile, TempCodeAuthenticating,UserLoginDevice
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.password_validation import validate_password
@@ -12,6 +12,16 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'type', 'is_active', 'is_verified', 'created_date']
+
+class TempAuthenticatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TempCodeAuthenticating
+        fields = ['id','user', 'code', 'created_date', 'updated_date', 'expire_time']
+
+class UserLoginDeviceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserLoginDevice
+        fields = ['id','user', 'ip_address', 'browser', 'device', 'created_at']
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
