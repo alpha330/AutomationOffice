@@ -7,7 +7,7 @@ from django.core.validators import RegexValidator
 
 
 class Company(models.Model):
-    name = models.CharField(max_length=255, verbose_name="نام شرکت")
+    name = models.CharField(max_length=255, verbose_name="نام شرکت",unique=True)
 
     logo = models.ImageField(
         upload_to='company/logos/',
@@ -45,7 +45,8 @@ class Company(models.Model):
         validators=[
             RegexValidator(r'^\d{12}$', 'کد اقتصادی باید ۱۲ رقم باشد.')
         ],
-        verbose_name="کد اقتصادی"
+        verbose_name="کد اقتصادی",
+        unique=True
     )
 
     establishment_date = jmodels.jDateField(
