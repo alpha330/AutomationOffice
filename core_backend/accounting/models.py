@@ -87,7 +87,7 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     phone_number = models.CharField(
-        max_length=12, validators=[validate_iranian_cellphone_number]
+        max_length=12, validators=[validate_iranian_cellphone_number],unique=True
     )
     image = models.ImageField(
         upload_to=avatar_media_path, default="img/mockups/default_man.png"

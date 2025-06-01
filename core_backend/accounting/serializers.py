@@ -7,6 +7,7 @@ from django.core import exceptions
 import uuid
 import re
 from django.shortcuts import get_object_or_404
+from .validators import validate_iranian_cellphone_number,is_valid_email
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -96,17 +97,28 @@ class RegisterSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email_or_mobile = serializers.CharField(max_length=255)
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        try:
-            user = authenticate(email=data['email'], password=data['password'])
-            if user and user.is_active:
-                return user
-        except exceptions.ValidationError as e:
-            raise serializers.ValidationError({"login": list(e.messages)})
-        return super().validate(data)
+        if is_valid_email(self.email_or_mobile):
+            try:
+                user = authenticate(email=data['email'], password=data['password'])
+                if user and user.is_active:
+                    return user
+            except exceptions.ValidationError as e:
+                raise serializers.ValidationError({"login": list(e.messages)})
+            return super().validate(data)
+        elif validate_iranian_cellphone_number(self.email_or_mobile):
+            try:
+                user_profile =  get_object_or_404(Profile,)
+                user = authenticate(email=data['email'], password=data['password'])
+                if user and user.is_active:
+                    return user
+            except exceptions.ValidationError as e:
+                raise serializers.ValidationError({"login": list(e.messages)})
+            return super().validate(data)
+            
 
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField()
