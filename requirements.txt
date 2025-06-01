@@ -20,6 +20,7 @@ djangorestframework-simplejwt
 
 # Date and Localization
 jdatetime
+django-jalali
 
 # WebSockets
 channels

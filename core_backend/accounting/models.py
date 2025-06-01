@@ -87,7 +87,7 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     phone_number = models.CharField(
-        max_length=12, validators=[validate_iranian_cellphone_number],unique=True
+        max_length=12, validators=[validate_iranian_cellphone_number],unique=True,null=True
     )
     image = models.ImageField(
         upload_to=avatar_media_path, default="img/mockups/default_man.png"
@@ -97,6 +97,9 @@ class Profile(models.Model):
     )
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
+    
+    def get_current_positions(self):
+        return self.positions.filter(is_active=True)
 
     def get_fullname(self):
         if self.first_name or self.last_name:

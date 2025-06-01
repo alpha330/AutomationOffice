@@ -101,31 +101,34 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        if is_valid_email(self.email_or_mobile):
+        if is_valid_email(data['email_or_mobile']): 
             try:
-                user = authenticate(email=data['email'], password=data['password'])
+                user = authenticate(email=data['email_or_mobile'], password=data['password'])
+                if user and user.is_active:
+                    return user
+            except exceptions.ValidationError as e:
+                
+                raise serializers.ValidationError({"login": list(e.messages)})
+            return super().validate(data)
+        elif validate_iranian_cellphone_number(data['email_or_mobile']):
+            try:                
+                user_profile =  get_object_or_404(Profile,phone_number=data["email_or_mobile"])                
+                user = authenticate(email=user_profile.user, password=data['password'])
                 if user and user.is_active:
                     return user
             except exceptions.ValidationError as e:
                 raise serializers.ValidationError({"login": list(e.messages)})
             return super().validate(data)
-        elif validate_iranian_cellphone_number(self.email_or_mobile):
-            try:
-                user_profile =  get_object_or_404(Profile,)
-                user = authenticate(email=data['email'], password=data['password'])
-                if user and user.is_active:
-                    return user
-            except exceptions.ValidationError as e:
-                raise serializers.ValidationError({"login": list(e.messages)})
-            return super().validate(data)
+        else:
             
+            raise serializers.ValidationError({"login": "نام کاربری باید یا ایمیل ثبت شده با شد یا شماره موبایل ثبت شده"})
 
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
     def validate(self, data):
         if not User.objects.filter(email=data['email']).exists():
-            raise serializers.ValidationError("User with this email does not exist")
+            raise serializers.ValidationError("کاربر با ایمیل ارسالی موجود نیست")
         return data
     
 class ActivationTempCodeSerializer(serializers.Serializer):
@@ -133,3 +136,36 @@ class ActivationTempCodeSerializer(serializers.Serializer):
     This class is used to serialize the User model in order Activate user instance
     """
     temp_code = serializers.IntegerField(required=True)
+    
+class ResetPasswordViaLinkSerializer(serializers.ModelSerializer):
+    """
+    this class handle Registration new users
+    password_1 = repeated main password
+    mobile_number = user mobile number required as username
+    email = user email address require
+
+    """
+    password = serializers.CharField(max_length=255, write_only=True)
+    password_1 = serializers.CharField(max_length=255, write_only=True)
+
+    class Meta:
+
+        model = User
+        fields = ["password", "password_1"]
+
+    def validate(self, data):
+        if data["password"] != data["password_1"]:
+            raise serializers.ValidationError(
+                {
+                    "message": "رمز عبور و تکرار رمز عبور یکسان نیست",             
+                    "Error": True,
+                    "status": 400,
+                    "code": "password_mismatch"                    
+                 }
+            )
+        
+        try:
+            validate_password(data["password"])
+        except exceptions.ValidationError as e:
+            raise serializers.ValidationError({"password": list(e.messages)})
+        return super().validate(data)

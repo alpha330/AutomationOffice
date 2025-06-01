@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, IsAdminUser,AllowAny
 from .models import User, Profile,TempCodeAuthenticating,UserLoginDevice
-from .serializers import UserSerializer, ProfileSerializer, RegisterSerializer, LoginSerializer, PasswordResetSerializer,ActivationTempCodeSerializer,ProfileSerializerUpdate,TempAuthenticatingSerializer,UserLoginDeviceSerializer
+from .serializers import UserSerializer, ProfileSerializer, RegisterSerializer, LoginSerializer, PasswordResetSerializer,ActivationTempCodeSerializer,ProfileSerializerUpdate,TempAuthenticatingSerializer,UserLoginDeviceSerializer,ResetPasswordViaLinkSerializer
 from django.core.mail import send_mail
 from django.conf import settings
 import uuid
@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework import status,permissions
 from user_agents import parse
 from rest_framework.exceptions import NotFound
-from validators import validate_iranian_cellphone_number,is_valid_email
+from .validators import validate_iranian_cellphone_number,is_valid_email
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -183,6 +183,7 @@ class LoginView(generics.GenericAPIView):
     permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
+        
         try:
             serializer.is_valid(raise_exception=True)
             user = serializer.validated_data
@@ -220,7 +221,7 @@ class LoginView(generics.GenericAPIView):
 
 class ForgotPasswordView(generics.GenericAPIView):
     serializer_class = PasswordResetSerializer
-
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -229,26 +230,51 @@ class ForgotPasswordView(generics.GenericAPIView):
         token = str(uuid.uuid4())
         user.token = token  # فرض می‌کنیم یه فیلد token به مدل User اضافه کنی
         user.save()
-        send_mail(
-            'Reset Your Password',
-            f'Click this link to reset your password: http://localhost:8000/accounting/api/v1/reset-password/{token}/',
-            settings.DEFAULT_FROM_EMAIL,
-            [email],
-            fail_silently=False,
+        sendEmail.delay(
+                template="email/reset_link_Password.tpl",
+                context={"token": token},
+                from_email="IT_department@nakhlearg.ir",
+                recipient_list=(email,),
         )
-        return Response({"message": "Password reset link sent"}, status=status.HTTP_200_OK)
+        return Response({
+                "message":"لینک بازنشانی رمز عبور ارسال شد", 
+                "status": "success",
+                "code": "reset link created",
+                "Error": False
+            }, 
+            status=status.HTTP_201_CREATED
+            )
 
 class ResetPasswordView(generics.GenericAPIView):
+    serializer_class=ResetPasswordViaLinkSerializer
+    permission_classes = [AllowAny]
     def post(self, request, token, *args, **kwargs):
-        try:
-            user = User.objects.get(token=token)
-            password = request.data.get('password')
-            user.set_password(password)
-            user.token = None  # پاک کردن توکن بعد از استفاده
-            user.save()
-            return Response({"message": "Password reset successfully"}, status=status.HTTP_200_OK)
-        except User.DoesNotExist:
-            return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            try:
+                user = User.objects.get(token=token)
+                password = request.data.get('password')
+                user.set_password(password)
+                user.token = None  # پاک کردن توکن بعد از استفاده
+                user.save()
+                return Response({
+                    "message":"رمز عبور تغییر پیدا کرد", 
+                    "status": "success",
+                    "code": "Password Changed",
+                    "Error": False
+                    }, 
+                    status=status.HTTP_201_CREATED
+                    )
+            except User.DoesNotExist:
+                return Response({
+                    "message":"توکن منقضی شده است", 
+                    "status": "fail",
+                    "code": "Token Expired",
+                    "Error": True
+                }, 
+                status=status.HTTP_400_BAD_REQUEST
+                )
+            
         
 class ActivationApiCodeView(generics.GenericAPIView):
     
@@ -297,7 +323,7 @@ class ActivationApiCodeView(generics.GenericAPIView):
     
 class LogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    
     def post(self, request):
         try:
             request.user.auth_token.delete()
