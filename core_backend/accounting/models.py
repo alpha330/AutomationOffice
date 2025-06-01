@@ -95,6 +95,8 @@ class Profile(models.Model):
     signitures = models.ImageField(
         upload_to=signuture_media_path, default="img/mockups/default_man.png"
     )
+    
+    date_of_birth = models.DateField(null=True,default="1984-12-01")
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     

@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import RegexValidator, FileExtensionValidator
 from django_jalali.db import models as jmodels  # نیاز به نصب django-jalali
 from accounting.models import Profile
+from django.core.validators import RegexValidator
 
 
 
@@ -160,3 +161,66 @@ class DepartmentPosition(models.Model):
 
     def __str__(self):
         return f"{self.position_type.title} در {self.department}"
+    
+
+LOCATION_TYPES = [
+    ("headquarter", "ستاد مرکزی"),
+    ("branch", "شعبه"),
+    ("warehouse", "انبار"),
+    ("factory", "کارخانه"),
+    ("office", "دفتر"),
+]
+
+iran_phone_validator = RegexValidator(
+    regex=r'^0\d{10}$',
+    message="شماره تلفن باید با ۰ شروع شده و ۱۱ رقم باشد."
+)
+
+postal_code_validator = RegexValidator(
+    regex=r'^\d{10}$',
+    message="کد پستی باید ۱۰ رقم باشد."
+)
+
+
+class CompanyLocation(models.Model):
+    name = models.CharField(max_length=255, verbose_name="نام محل (اختیاری)", blank=True, null=True)
+
+    country = models.CharField(max_length=100, verbose_name="کشور", default="ایران")
+    province = models.CharField(max_length=100, verbose_name="استان")
+    city = models.CharField(max_length=100, verbose_name="شهر")
+
+    postal_code = models.CharField(
+        max_length=10,
+        validators=[postal_code_validator],
+        verbose_name="کد پستی"
+    )
+
+    location_type = models.CharField(
+        max_length=20,
+        choices=LOCATION_TYPES,
+        verbose_name="نوع محل"
+    )
+
+    phone_number = models.CharField(
+        max_length=11,
+        validators=[iran_phone_validator],
+        verbose_name="شماره تلفن"
+    )
+
+    fax_number = models.CharField(
+        max_length=11,
+        validators=[iran_phone_validator],
+        verbose_name="شماره فکس",
+        blank=True,
+        null=True
+    )
+
+    members = models.ManyToManyField(
+        Profile,
+        related_name="locations",
+        blank=True,
+        verbose_name="پروفایل‌های مرتبط"
+    )
+
+    def __str__(self):
+        return f"{self.get_location_type_display()} - {self.city}"

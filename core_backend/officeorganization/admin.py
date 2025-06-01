@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Company,Priority,DepartmentType,Department,PositionType,DepartmentPosition,ProfilePosition
+from .models import Company,Priority,DepartmentType,Department,PositionType,DepartmentPosition,ProfilePosition,CompanyLocation
 # Register your models here.
 
 @admin.register(Company)
@@ -30,3 +30,7 @@ class DepartmentModelAdmin(admin.ModelAdmin):
 @admin.register(ProfilePosition)
 class ProfilePositionModelAdmin(admin.ModelAdmin):
     list_display =("profile","department_position","assigned_date","is_active")
+    
+@admin.register(CompanyLocation)
+class CompanyLocationModelAdmin(admin.ModelAdmin):
+    list_display =("name","country","province","city","postal_code","location_type")
