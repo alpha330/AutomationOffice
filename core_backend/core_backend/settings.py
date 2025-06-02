@@ -47,12 +47,13 @@ INSTALLED_APPS = [
     "django_extensions",
     "django_celery_beat",
     "accounting",
-    "officeorganization",   
+    "officeorganization",
+    "mailmanagements",
     "rest_framework", 
     'rest_framework.authtoken',
     'drf_yasg',
     'mail_templated',
-    'django_jalali'
+    'django_jalali',
 ]
 
 MIDDLEWARE = [

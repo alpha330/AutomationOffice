@@ -4,6 +4,7 @@ djangorestframework
 gunicorn
 user_agents
 
+
 # Database
 psycopg2-binary
 
@@ -30,6 +31,7 @@ channels_redis
 pytest
 django-debug-toolbar
 
+
 # Images and Media
 Pillow
 
@@ -43,8 +45,11 @@ ghasedakpack
 django-mail-templated
 
 # Development Tools
+pygraphviz
 django-extensions
 django-filter
 django-cors-headers
 python-dotenv
 requests
+python-docx
+docx
