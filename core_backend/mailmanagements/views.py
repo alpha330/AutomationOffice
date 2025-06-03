@@ -39,7 +39,7 @@ class SecretariatViewSet(viewsets.ModelViewSet):
 class MailCategoryViewSet(viewsets.ModelViewSet):
     queryset = md.MailCategory.objects.all()
     serializer_class = sz.MailCategoryModelSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser,IsAuthenticated]
 
     def get_queryset(self):
         if self.request.user.is_superuser:
@@ -54,7 +54,7 @@ class MailCategoryViewSet(viewsets.ModelViewSet):
 class MailViewSet(viewsets.ModelViewSet):
     queryset = md.Mail.objects.all()
     serializer_class = sz.MailModelSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser,IsAuthenticated]
 
     def get_queryset(self):
         if self.request.user.is_superuser:
