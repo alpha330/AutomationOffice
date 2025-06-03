@@ -62,6 +62,7 @@ class Mail(models.Model):
     recipients = models.ManyToManyField(User, related_name='received_mails', verbose_name="گیرندگان")
     mail_number = models.CharField(max_length=20, unique=True, editable=False, verbose_name="شماره نامه")
     signature_image = models.ImageField(upload_to='mail_signatures/', blank=True, null=True, verbose_name="عکس امضا")
+    is_signed = models.BooleanField(verbose_name="تایید امضا",default=False)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ به‌روزرسانی")
     is_draft = models.BooleanField(default=False, verbose_name="پیش‌نویس")

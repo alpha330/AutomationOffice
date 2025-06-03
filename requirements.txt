@@ -45,7 +45,7 @@ ghasedakpack
 django-mail-templated
 
 # Development Tools
-pygraphviz
+# pygraphviz
 django-extensions
 django-filter
 django-cors-headers
