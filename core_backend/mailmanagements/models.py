@@ -67,6 +67,9 @@ class Mail(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ به‌روزرسانی")
     is_draft = models.BooleanField(default=False, verbose_name="پیش‌نویس")
     is_urgent = models.BooleanField(default=False, verbose_name="فوری")
+    is_confidential = models.BooleanField(default=False, verbose_name="محرمانه")
+    notify_by_email = models.BooleanField(default=False, verbose_name="اطلاع‌رسانی از طریق ایمیل")
+    notify_by_sms = models.BooleanField(default=False, verbose_name="اطلاع‌رسانی از طریق پیامک")
 
     def save(self, *args, **kwargs):
         if not self.mail_number:

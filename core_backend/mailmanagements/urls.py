@@ -10,4 +10,5 @@ router.register(r'Mail', vw.MailViewSet, basename='mail')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('MailInbox/', vw.MailRecipientViewSet.as_view(), name='mail-inbox'),
 ]

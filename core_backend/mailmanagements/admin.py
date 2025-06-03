@@ -20,6 +20,10 @@ class MailCategoryModelAdmin(admin.ModelAdmin):
     
 @admin.register(md.Mail)
 class MailModelAdmin(admin.ModelAdmin):
-    list_display = ("secretariat","category","company","header_size","is_signed","sender","mail_number","created_at","updated_at")
+    list_display = ("secretariat","category","company","header_size","is_signed","sender","mail_number","created_at","updated_at", "is_draft", "is_confidential", "is_urgent","notify_by_sms","notify_by_email")
+    list_filter = ("secretariat","category","company","header_size","is_signed","sender","is_draft", "is_confidential", "is_urgent","notify_by_sms","notify_by_email")
+    list_editable = ("is_signed","is_draft", "is_confidential", "is_urgent","notify_by_sms","notify_by_email")
+    ordering = ("-created_at",)
+    
     search_fields = ("name","address","department","department")
     
