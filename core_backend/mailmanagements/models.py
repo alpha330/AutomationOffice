@@ -68,6 +68,7 @@ class Mail(models.Model):
     is_draft = models.BooleanField(default=False, verbose_name="پیش‌نویس")
     is_urgent = models.BooleanField(default=False, verbose_name="فوری")
     is_confidential = models.BooleanField(default=False, verbose_name="محرمانه")
+    is_archived = models.BooleanField(default=False, verbose_name="بایگانی شده")
     notify_by_email = models.BooleanField(default=False, verbose_name="اطلاع‌رسانی از طریق ایمیل")
     notify_by_sms = models.BooleanField(default=False, verbose_name="اطلاع‌رسانی از طریق پیامک")
 

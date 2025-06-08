@@ -10,5 +10,7 @@ router.register(r'Mail', vw.MailViewSet, basename='mail')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('MailInbox/', vw.MailRecipientViewSet.as_view(), name='mail-inbox'),
+    path('MailInbox/', vw.CheckMailRecipientView.as_view(), name='mail-inbox'),
+    path('MailOutBox/', vw.CheckMailSendView.as_view(), name='mail-outbox'),
+    path('CreateMail/', vw.CreateMailView.as_view(), name='create-mail'),
 ]
