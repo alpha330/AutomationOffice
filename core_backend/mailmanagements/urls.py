@@ -13,4 +13,5 @@ urlpatterns = [
     path('MailInbox/', vw.CheckMailRecipientView.as_view(), name='mail-inbox'),
     path('MailOutBox/', vw.CheckMailSendView.as_view(), name='mail-outbox'),
     path('CreateMail/', vw.CreateMailView.as_view(), name='create-mail'),
+    path('ArchiveMail/', vw.ArchiveMailView.as_view(), name='archive-mail'),
 ]

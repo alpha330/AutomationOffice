@@ -109,3 +109,26 @@ class CreateMailSerializer(serializers.ModelSerializer):
         # استفاده از MailModelSerializer برای خروجی
         return MailModelSerializer(instance).data
     
+class ArchiveMailSerializer(serializers.Serializer):
+    mail_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        allow_empty=False,
+        max_length=100  # محدودیت تعداد IDها برای جلوگیری از درخواست‌های سنگین
+    )
+
+    def validate_mail_ids(self, value):
+        # چک کردن اینکه همه IDها معتبر باشن و نامه‌ها وجود داشته باشن
+        mails = md.Mail.objects.filter(
+            id__in=value,
+            sender=self.context['request'].user,
+            is_archived=False
+        ).values_list('id', flat=True)
+        invalid_ids = set(value) - set(mails)
+        if invalid_ids:
+            raise serializers.ValidationError({
+                "message": f"نامه‌هایی با IDهای {invalid_ids} یافت نشدند یا متعلق به کاربر نیستند یا قبلاً آرشیو شده‌اند",
+                "error": True,
+                "status": 400,
+                "code": "invalid_mail_ids"
+            })
+        return value

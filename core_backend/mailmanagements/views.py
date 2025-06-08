@@ -139,4 +139,32 @@ class CreateMailView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save()
+
+class ArchiveMailView(generics.GenericAPIView):
+    serializer_class = sz.ArchiveMailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        mail_ids = serializer.validated_data['mail_ids']
+        user = request.user
+
+        # به‌روزرسانی نامه‌ها
+        updated_count = md.Mail.objects.filter(
+            id__in=mail_ids,
+            sender=user,
+            is_archived=False
+        ).update(is_archived=True)
+
+        return Response({
+            "data": {
+                "archived_count": updated_count,
+                "mail_ids": mail_ids
+            },
+            "message": f"{updated_count} نامه با موفقیت آرشیو شدند",
+            "error": False,
+            "status": 200
+        }, status=status.HTTP_200_OK)
     
