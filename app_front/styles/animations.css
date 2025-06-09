@@ -1,0 +1,77 @@
+
+@keyframes HeadFootAnime {
+    0%{
+        opacity:0;
+    }
+    100%{
+        opacity:100;
+    }
+}
+
+@keyframes lineInLayout {
+    0%{
+        width: 0;
+    }
+    100%{
+        width: 100%;
+    }
+}
+
+@keyframes dropDownAnim {
+    0%{
+        opacity:0;
+    }
+    100%{
+        opacity:1;
+    }
+}
+
+@keyframes NavSelected {
+    from{
+        background-image:linear-gradient(0deg,rgba(0, 49, 141, 0.61)0%,rgba(214, 214, 214, 0.65) 95%);
+    }
+    to{
+        background-image:linear-gradient(180deg,rgba(0, 49, 141, 0.61)0%,rgba(214, 214, 214, 0.65) 95%);
+    }
+}
+
+@keyframes widthScalation {
+    0%{
+        color: transparent;
+    }
+    100%{
+        color: white;
+    }
+}
+
+@keyframes topToDown {
+    0%{
+        top:-100%;
+    }
+    100%{
+        top:5%;
+    }
+}
+
+/* تغییر اندازه کلی اسکرول بار */
+::-webkit-scrollbar {
+    width: 8px;  /* عرض اسکرول بار */
+    height: 8px; /* برای اسکرول افقی */
+  }
+  
+  /* تغییر رنگ پس‌زمینه اسکرول بار */
+  ::-webkit-scrollbar-track {
+    background: transparent; 
+    border-radius: 10px;
+  }
+  
+  /* تغییر رنگ و استایل نوار اسکرول */
+  ::-webkit-scrollbar-thumb {
+    background: #00098b; /* رنگ دسته اسکرول */
+    border-radius: 10px;
+  }
+  
+  /* تغییر رنگ هنگام هاور شدن روی اسکرول بار */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #d4d2d2; 
+  }

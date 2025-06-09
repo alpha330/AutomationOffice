@@ -1,0 +1,24 @@
+# Dockerfile.dev
+FROM node:23-alpine
+
+ENV LANG C.UTF-8
+ENV LANGUAGE C.UTF-8
+ENV LC_ALL C.UTF-8
+
+WORKDIR /usr/src/app
+
+COPY app_front/package*.json ./
+RUN npm install
+
+COPY app_front .
+COPY envs/dev/nextJs/.env .
+
+# فایل‌های پروژه رو از bind mount می‌گیریم، پس نیازی به COPY نیست
+
+RUN export LANG=C.UTF-8
+RUN export LANGUAGE=C.UTF-8
+RUN export LC_ALL=C.UTF-8
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
