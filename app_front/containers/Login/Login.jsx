@@ -71,7 +71,7 @@ const LoginMain = () => {
         text-align: center;
         `
     const formStyle = css`
-        width: 50%;
+        width: 40%;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -147,9 +147,11 @@ const LoginMain = () => {
                 <div css={btnDiv}>
                     <Button type={"submit"} loading={auth.loading} >ورود</Button>
                 </div>
-                <CustomeCheckBox type={"checkbox"} checked={false}>مرا بخاطر بسپار</CustomeCheckBox>
-                <BsFillInfoCircleFill style={{ color: "white", marginRight: "0.5rem", cursor: "pointer" }}
-                    onClick={() => notifyEngine("با انتخاب این گزینه، در صورت بسته شدن مرورگر، اطلاعات شما ذخیره می‌شود", "info")} />
+                <div css={btnDiv}>
+                    <CustomeCheckBox type={"checkbox"} checked={false}>مرا بخاطر بسپار</CustomeCheckBox>
+                    <BsFillInfoCircleFill style={{ color: "white", marginRight: "0.5rem", cursor: "pointer" }}
+                        onClick={() => notifyEngine("با انتخاب این گزینه، در صورت بسته شدن مرورگر، اطلاعات شما ذخیره می‌شود", "info")} />
+                </div>                
             </form>
             <div css={leftSideDiv}>
                 <img src="logo_white-150x150.png" alt="Login Image" style={{ width: "100%", height: "auto", borderRadius: "25px 0 25px 0" }} />

@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { LOGOUT_ACTION } from "@/actions/auth";
 import { getToken, getEmail, removeTokenAndMobile } from "@/utils/auth";
 import { notifyEngine } from "@/utils/notifyEngine";
+import { ShamsiDateAndTime } from "..";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -56,7 +57,7 @@ const Header = () => {
       font-size: 1.5rem;
       display: ${isScrolling ? "none" : "flex"};
       align-items: center;
-      justify-content: ${auth.logged ? "space-between" : "center"};
+      justify-content: ${auth.logged ? "space-between" : "space-around"};
       flex-direction:  "row";
       position: fixed;
       animation: HeadFootAnime 600ms ease-in;
@@ -73,6 +74,7 @@ const Header = () => {
   return (
     <div css={styles.header}>
       <img css={styles.logo} src="/logo_white-150x150.png" alt="ARG LOGO" />
+      <ShamsiDateAndTime />
     </div>
   );
 };
