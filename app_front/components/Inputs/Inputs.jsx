@@ -17,32 +17,64 @@ const Input = ({ type, inputDef =()=>{},setValue, name, label, value, err ,disab
 
 
     const inputEl = css`
-        width: 80%;
-        height: 50%;
-        appearance: none;
-        margin: 0;
-        font-family: traffic;
-        font-size: 1rem;
-        background-color: transparent;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        outline: none;
-        text-align: center;
-        
-        &:focus {
-            ~ label{
-                transform:translate(0,-100%);
-                width:100%;
-                background-color:${err ? "rgba(255, 0, 0, 0.384)" :"rgba(196, 196, 196, 0.56)"};
-                text-align:center;
-                border-radius:10px;
+          width: 100%;
+          height: fit-content;
+          appearance: none;
+          margin: 0;
+          font-family: traffic;
+          font-size: 1rem;
+          background-color: transparent !important;
+          color: white !important;
+          border: none;
+          border-radius: 6px;
+          outline: none;
+          text-align: center;
+
+          &:focus {
+            ~ label {
+              transform: translate(0, -100%);
+              width: 100%;
+              text-align: center;
+              border-bottom:2px solid ${err ? 'rgba(255, 0, 0, 0.384)' : 'rgba(196, 196, 196, 0.56)'};
             }
-            ~ span{
-                width:100%;
-            }  
-        }
-    `;
+            ~ span {
+              width: 100%;
+            }
+            background-color: transparent !important;
+          }
+
+          /* Override autofill styles for Chromium-based browsers (Edge, Chrome) */
+          &:-webkit-autofill,
+          &:-webkit-autofill:hover,
+          &:-webkit-autofill:focus,
+          &:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px transparent inset !important; /* پس‌زمینه شفاف */
+            box-shadow: 0 0 0 1000px transparent inset !important; /* پشتیبانی از Edge */
+            -webkit-text-fill-color: white !important; /* رنگ متن سفید */
+            background-color: transparent !important;
+            background-image: none !important; /* حذف background-image احتمالی */
+            caret-color: white !important; /* رنگ کرسر */
+            transition: background-color 9999s ease-in-out 0s; /* تاخیر طولانی برای جلوگیری از تغییر */
+          }
+
+          /* برای اطمینان از سازگاری با Edge */
+          &[type="text"]:-webkit-autofill,
+          &[type="email"]:-webkit-autofill,
+          &[type="password"]:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+            box-shadow: 0 0 0 1000px transparent inset !important;
+            -webkit-text-fill-color: white !important;
+            background-color: transparent !important;
+          }
+
+          /* حذف هرگونه استایل پیش‌فرض اضافی */
+          & {
+            background-image: none !important;
+            box-shadow: none !important;
+            -webkit-appearance: none !important;
+            -ms-appearance: none !important; /* پشتیبانی از Edge */
+          }
+        `;
 
     const textArea = css`
         width: 100%;
@@ -83,6 +115,7 @@ const Input = ({ type, inputDef =()=>{},setValue, name, label, value, err ,disab
         transition: all 600ms ease-in;
         text-align:center;
         margin-bottom:1rem;
+        transition: all 700ms ease-in;
         ${value === "" ? "background-color: transparent;":err ? "background-color: :rgba(255, 0, 0, 0.384);" :"background-color: :rgba(196, 196, 196, 0.56);"}
         ${value === "" ? "transform: translate(0,0)":"transform:translate(0,-130%);"}
         

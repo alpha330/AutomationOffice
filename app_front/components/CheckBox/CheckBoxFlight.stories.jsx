@@ -1,19 +1,19 @@
 import React from "react";
-import CheckBoxFlight from "./CheckBox.jsx";
+import CustomeCheckBox from "./CheckBox.jsx";
 
 export default {
-  title: "components/CheckBoxFlight",
-  component: CheckBoxFlight,
+  title: "components/CheckBox",
+  component: CustomeCheckBox,
 };
 
-export const CheckBoxFlightUnselect = () => {
+export const CheckBoxUnselect = () => {
   return(
-    <CheckBoxFlight  value={"oneWay"} flightType={"test"} type={"radio"} >یک طرفه</CheckBoxFlight>  
+    <CustomeCheckBox  value={"oneWay"} checked={"test"} type={"radio"} >یک طرفه</CustomeCheckBox>  
   )
 };
 
-export const CheckBoxFlightSelect = () => {
+export const CheckBoxSelect = () => {
   return(
-    <CheckBoxFlight  value={"oneWay"} flightType={"oneWay"} type={"radio"} >یک طرفه</CheckBoxFlight>  
+    <CustomeCheckBox  value={"oneWay"} checked={"oneWay"} type={"radio"} >یک طرفه</CustomeCheckBox>  
   )
 };

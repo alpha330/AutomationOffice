@@ -9,12 +9,15 @@ import { useDispatch,useSelector } from "react-redux";
 import { LOGIN_ACTION } from "@/actions/auth";
 import { PROFILE_ACTION } from "@/actions/profile";
 import { useRouter } from "next/router";
+import { loginSuccess } from "@/store/authSlice";
+import CustomeCheckBox from "@/components/CheckBox/CheckBox";
 
 const LoginMain = () => {
     const [userName,setUserName] = useState("")
     const [password,setPassword] = useState("")
     const dispatch = useDispatch()
     const auth = useSelector((state)=>(state.auth))
+    const router = useRouter()
     const mainLoginDiv = css`
     width:fit-content;
     height: fit-content;
@@ -83,7 +86,7 @@ const LoginMain = () => {
                 "Authorization": `token ${res.token}`,
                 "Content-Type": "application/json",
               };
-            const resProfile = await dispatch(PROFILE_ACTION(header,"POST"))
+            const resProfile = await dispatch(PROFILE_ACTION(header,"GET"))
             setProfile(resProfile)
             setToken(res.token,res.mobile);
             dispatch(loginSuccess({ token: res.token, user: res.user }));
@@ -106,6 +109,7 @@ const LoginMain = () => {
                 <div css={btnDiv}>
                     <Button type={"submit"} loading={auth.loading} >ورود</Button>
                 </div>
+                <CustomeCheckBox type={"checkbox"} checked={false}>مرا بخاطر بسپار</CustomeCheckBox>
             </form>
         </div>
     )

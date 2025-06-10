@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'corsheaders',
     "django_filters",
     "django_extensions",
     "django_celery_beat",
@@ -59,7 +60,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -237,3 +239,13 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": timedelta(hours=24),  # زمان‌بندی هر 5 دقیقه
     },
 }
+
+# تنظیمات CORS
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:3000",  # آدرس فرانت‌اند Next.js
+    "http://localhost:3000",  # برای اطمینان
+    "http://arg_aut_frontend:3000",
+]
+
+# (اختیاری) اگر می‌خوای همه originها مجاز باشن (برای تست، نه تولید!)
+CORS_ALLOW_ALL_ORIGINS = True

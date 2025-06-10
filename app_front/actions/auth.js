@@ -5,7 +5,7 @@ const LOGIN_ACTION = (data = {}) => {
   return async dispatch => {
     try {
       const response = await reduxCall(dispatch, {
-        url: `${process.env.NEXT_PUBLIC_API_URL}/accounting/api/v1/login/`,
+        url: `http://${process.env.NEXT_PUBLIC_API_URL}:8000/accounting/api/v1/login/`,
         method: "POST",
         name: 'LOGIN',
         data: data
@@ -29,7 +29,7 @@ const LOGOUT_ACTION = (headers = {}) => {
   return async dispatch => {
     try {
       const response = await reduxCall(dispatch, {
-        url: 'http://127.0.0.1:8000/accounting/api/v1/logout/',
+        url: `http://${process.env.NEXT_PUBLIC_API_URL}:8000/accounting/api/v1/logout/`,
         method: "POST",
         name: 'LOGOUT',
         headers: headers,
@@ -49,7 +49,7 @@ const REGISTER_ACTION = (data={}) => {
 
   return async dispatch => {
     return reduxCall(dispatch,{
-      url:'http://127.0.0.1:8000/accounting/api/v1/register/',
+      url:`http://${process.env.NEXT_PUBLIC_API_URL}:8000/accounting/api/v1/register/`,
       method:"POST",
       name:'REGISTER',
       data:data,
@@ -61,7 +61,7 @@ const VERIFICATION_CODE = (data={}) => {
 
   return async dispatch => {
     return reduxCall(dispatch,{
-      url:'http://127.0.0.1:8000/accounting/api/v1/tempcode/verify/',
+      url:`http:/${process.env.NEXT_PUBLIC_API_URL}:8000/accounting/api/v1/tempcode/verify/`,
       method:"POST",
       name:'VERIFICATION',
       data:data,
@@ -73,7 +73,7 @@ const RETRY_VERIFICATION_CODE = (data={}) => {
 
   return async dispatch => {
     return reduxCall(dispatch,{
-      url:'http://127.0.0.1:8020/auth/api/v1/verification/code/sms/',
+      url:`http://127.0.0.1:8020/auth/api/v1/verification/code/sms/`,
       method:"POST",
       name:'RETRY_VERIFICATION',
       data:data,

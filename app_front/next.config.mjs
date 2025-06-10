@@ -10,6 +10,9 @@ const nextConfig = {
     }
     return config;
   },
+  devIndicators: {
+    buildActivity: false, // غیرفعال کردن اندیکاتور لودینگ و لوگو
+  },
 };
 
 export default nextConfig;

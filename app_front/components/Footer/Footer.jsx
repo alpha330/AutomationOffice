@@ -27,7 +27,7 @@ const Footer = () => {
     const FooterMainDiv = css`
         width:100%;
         height:10vh;
-        background-color: rgba(0, 0, 0, 0.9);
+        background-color: rgba(0, 0, 0, 0.57);
         font-size:1.5rem;
         display:${ isScrolling ? "none" : "flex" };
         justify-content:space-evenly;

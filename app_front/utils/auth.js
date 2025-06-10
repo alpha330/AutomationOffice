@@ -12,7 +12,7 @@ export const setToken = (token,mobile) => {
 };
 
 export const setProfile = (profile = {}) => {
-  Cookies.set(PROFILE_STORE, stringify(profile), { expires: 7 }); // 7 روز
+  Cookies.set(PROFILE_STORE, JSON.stringify(profile), { expires: 7 }); // 7 روز
 };
 
 
