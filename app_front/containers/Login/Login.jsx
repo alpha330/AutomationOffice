@@ -88,9 +88,9 @@ const LoginMain = () => {
               };
             const resProfile = await dispatch(PROFILE_ACTION(header,"GET"))
             setProfile(resProfile)
-            setToken(res.token,res.mobile);
-            dispatch(loginSuccess({ token: res.token, user: res.user }));
-            notifyEngine("خوش آمدید", "success");
+            setToken(res.token,res.user_id,res.email,res.type);
+            dispatch(loginSuccess({ token: res.token, user: res.user_id, email:res.email, type:res.type }));
+            notifyEngine(`خوش آمدید ${res.email}`, "success");
             router.push("/");
         } else {
           notifyEngine("ورود ناموفق", "error");

@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { LOGOUT_ACTION } from "@/actions/auth";
-import { getToken, getMobile, removeTokenAndMobile } from "@/utils/auth";
+import { getToken, getEmail, removeTokenAndMobile } from "@/utils/auth";
 import { notifyEngine } from "@/utils/notifyEngine";
 
 const Header = () => {
@@ -14,11 +14,11 @@ const Header = () => {
   const [loginStatus, setLoginStatus] = useState(false);
 
   const token = getToken();
-  const mobile = getMobile();
+  const email = getEmail();
 
   useEffect(() => {
-    setLoginStatus(Boolean(token && mobile));
-  }, [token, mobile]);
+    setLoginStatus(Boolean(token && email));
+  }, [token, email]);
 
   useEffect(() => {
     let scrollTimeout;
@@ -56,8 +56,8 @@ const Header = () => {
       font-size: 1.5rem;
       display: ${isScrolling ? "none" : "flex"};
       align-items: center;
-      justify-content: center;
-      flex-direction: row;
+      justify-content: ${auth.logged ? "space-between" : "center"};
+      flex-direction:  "row";
       position: fixed;
       animation: HeadFootAnime 600ms ease-in;
       z-index: 10;

@@ -201,6 +201,8 @@ class LoginView(generics.GenericAPIView):
             return Response({
                 "token": token.key, 
                 "user_id": user.id,
+                "email":user.email,
+                "type":user.type,
                 "message": "ورود تایید شد",
                 "status": "success",
                 "code": "login_done",
