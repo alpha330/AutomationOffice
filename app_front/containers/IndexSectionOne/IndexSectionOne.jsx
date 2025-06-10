@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { mainDivIndxSecOne } from "./IndexSectionOneStyle";
 import LoginMain from "../Login/Login";
 import { useSelector } from "react-redux";
 
@@ -11,6 +10,19 @@ const IndexSectionOne = () => {
     return <div>در حال بارگذاری...</div>;
   }
 
+  const mainDivIndxSecOne = css`
+    width:100%;
+    height:100vh;
+    background-image:linear-gradient(to bottom right, rgba(0, 6, 61, 0.80) , rgba(0, 6, 61, 0.38)) ,url(./images/background-main.jpg);
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: column;
+`
+
   const upperMainText = css`
     width: 100%;
     display: flex;
@@ -20,42 +32,18 @@ const IndexSectionOne = () => {
     color: white;
     height: 100%;
   `;
-  const mainTextH1 = css`
-    font-size: 4rem;
-    margin: 1rem;
-    animation: widthScalation 3s ease;
-    direction: rtl;
-    color: white;
 
-    @keyframes widthScalation {
-      from { width: 0; }
-      to { width: 100%; }
-    }
-  `;
-  const subTextH3 = css`
-    font-size: 2rem;
-    margin: 1rem;
-    animation: widthScalation 5s ease;
-    direction: rtl;
-    color: white;
-
-    @keyframes widthScalation {
-      from { width: 0; }
-      to { width: 100%; }
-    }
-  `;
 
   return (
     <div css={mainDivIndxSecOne}>
       <div css={upperMainText}>
-        <h3 css={mainTextH1}>شرکت نخل ارگ کریمان</h3>
+        
         {!logged && (
           <>
-            <LoginMain />
-            <h5 css={subTextH3}>اتوماسیون پروژه</h5>
+            <LoginMain />            
           </>
         )}
-      </div>
+      </div>      
     </div>
   );
 };
