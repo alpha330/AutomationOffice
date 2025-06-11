@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import { H5 } from "../TypoGraphy"
 import RingLoader  from "react-spinners/RingLoader";
 
-const Button =({children,type,onCliCkAction=()=>{},loading=false,disabled = false})=>{
+const Button =({children,type,onCliCkAction=()=>{},loading=false,disabled = false,fontSize=""})=>{
 
     const btnStyle = css`
         width:100%;

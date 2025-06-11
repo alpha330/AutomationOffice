@@ -1,6 +1,5 @@
 import Head from "next/head";
 import IndexSectionOne from "@/containers/IndexSectionOne/IndexSectionOne";
-import IndexSectionTwo from "@/containers/IndexSectionTwo/IndexSectionTwo";
 
 const Home = () => {
   return (
