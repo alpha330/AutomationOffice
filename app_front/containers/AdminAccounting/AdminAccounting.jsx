@@ -11,21 +11,22 @@ const AdminAccounting = ({show=true}) =>{
       };
 
     const mainDivAcc = css`
-        display:${show?"flex;":"none;"}
+        display: ${show?"flex;":"none;"}
         width:100%;
         height:100%;
         justify-content:center;
-        aligne-items:center;
+        align-items: center;
         flex-direction:column;
 
     `
+    
     const headDivAcc =css `
         border-bottom:1px solid rgb(133, 133, 133);
         width:100%;
         height:10%;
         display:flex;
         justify-content:space-evenly;
-        aligne-items:center;
+        align-items:center;
         flex-direction:row-reverse;
         
     `

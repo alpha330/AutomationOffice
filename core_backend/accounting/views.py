@@ -247,6 +247,22 @@ class ForgotPasswordView(generics.GenericAPIView):
             status=status.HTTP_201_CREATED
             )
 
+class VerifyLoggedInUser(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, token, *args, **kwargs):
+       user = User.objects.get(token=token)
+       print(f"USER : {user}")
+       if user:
+           return Response({
+               "message":"کاربر لاگین میباشد", 
+                "status": "success",
+                "code": "Token Has Been Verified",
+                "Error": False
+                }, 
+                status=status.HTTP_200_OK
+            )
+
 class ResetPasswordView(generics.GenericAPIView):
     serializer_class=ResetPasswordViaLinkSerializer
     permission_classes = [AllowAny]

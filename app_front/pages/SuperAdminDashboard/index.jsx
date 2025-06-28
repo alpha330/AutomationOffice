@@ -4,6 +4,9 @@ import { H5 } from "@/components";
 import Head from "next/head";
 import { useState } from "react";
 import AdminAccounting from "@/containers/AdminAccounting/AdminAccounting";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 const SuperAdminDashboard = () => {
   const [activeSection, setActiveSection] = useState("accounting");
@@ -11,7 +14,17 @@ const SuperAdminDashboard = () => {
   const handleButtonClick = (section) => {
     setActiveSection(section);
   };
-
+  const router = useRouter()
+  const auths = useSelector((state) => state.auth);
+  useEffect(() => {
+    
+    if (!auths.logged) {
+      router.push("/");
+    } else if (auths.type !== 1) {
+      router.push("/");
+    }
+  }
+  ,[])
   const adminMainDashboard = css`
     width: 100%;
     min-height: 100vh;

@@ -16,6 +16,7 @@ urlpatterns = [
     path('tempcode/verify/', views.ActivationApiCodeView.as_view(), name='tempcode_verify'),
     path('forgot-password/', views.ForgotPasswordView.as_view(), name='forgot_password'),
     path('reset-password/<str:token>/', views.ResetPasswordView.as_view(), name='reset_password'),
+    path('verify-user/<str:token>/', views.VerifyLoggedInUser.as_view(), name='verify_user'),
     path('my-profile/', views.MyProfileView.as_view(), name='my-profile'),
     path('my-profile/update/<int:id>/', views.MyProfileUpdate.as_view(), name='my-profile-update'),
 ]

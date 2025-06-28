@@ -1,7 +1,28 @@
 import Head from "next/head";
 import IndexSectionOne from "@/containers/IndexSectionOne/IndexSectionOne";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+
 
 const Home = () => {
+  const auths = useSelector( (state)=>(state.auth) )
+  console.log("TEST",auths)
+  const router = useRouter()
+  useState(() => {
+    if (auths.logged){
+      if (auths.type === 1) {
+        router.push("/SuperAdminDashboard");
+      } else if (auths.type === 2) {
+        router.push("/AdminDashboard");
+      } else if (auths.type === 3) {
+        router.push("/UserDashboard");
+      } else {
+        router.push("/login");
+      }
+    }
+
+  },[])
   return (
     <>
       <Head>

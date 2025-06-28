@@ -30,6 +30,7 @@ const reduxCall = async (
     dispatch({
       type: actionTypes[`${name}_STARTED`],
       loading: true,
+      logged:false, // ← اگر نیاز به تغییر وضعیت لاگین دارید
       ...customPayload,
     });
 
@@ -45,9 +46,9 @@ const reduxCall = async (
     dispatch({
       type: actionTypes[`${name}_SUCCESS`],
       loading: false,
-      logged: name === "LOGIN" ? true : name === "LOGOUT" ? false : undefined,
       response:response,
       error: false,
+      logged:true,
       ...customPayload,
     });
 
@@ -62,8 +63,8 @@ const reduxCall = async (
     dispatch({
       type: actionTypes[`${name}_FAILED`],
       loading: false,
-      error: true,
       logged: false,
+      error: true,
       error_message:
         error?.detail ||
         error?.message ||

@@ -34,7 +34,7 @@ const Login = () => {
         justify-content:center;
         flex-direction:column;
         color:white;
-        postition:relative;
+        position:relative;
         overflow:hidden;
     `
     const headerDivContact = css`
