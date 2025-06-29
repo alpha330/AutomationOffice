@@ -20,60 +20,35 @@ export const setProfile = (profile = {}) => {
 };
 
 
-
-// Get token from cookie (client or server)
-export const getToken = (req = null) => {
-  if (req) {
-    const cookies = cookie.parse(req.headers.cookie || "");
-    return cookies[TOKEN_KEY] || null;
-  } else {
-    return Cookies.get(TOKEN_KEY) || null;
+export const getToken = () => {
+  if (typeof window !== "undefined") {
+      return Cookies.get("token")
   }
-};
+}
 
-// Get Profile from cookie (client or server)
-export const getProfile = (req = null) => {
-  if (req) {
-    const cookies = cookie.parse(req.headers.cookie || "");
-    return cookies[PROFILE_STORE] || null;
-  } else {
-    return Cookies.get(PROFILE_STORE) || null;
+export const getUserId = () => {
+  if (typeof window !== "undefined") {
+      return Cookies.get("user_id")
   }
-};
+}
 
-// Get Mobile from cookie (client or server)
-export const getEmail = (req = null) => {
-  if (req) {
-    const cookies = cookie.parse(req.headers.cookie || "");
-    return cookies[USER_EMAIL] || null;
-  } else {
-    return Cookies.get(USER_EMAIL) || null;
+export const getEmail = () => {
+  if (typeof window !== "undefined") {
+      return Cookies.get("email")
   }
-};
+}
 
-export const getUserId = (req = null) => {
-  if (req) {
-    const cookies = cookie.parse(req.headers.cookie || "");
-    return cookies[USER_ID] || null;
-  } else {
-    return Cookies.get(USER_ID) || null;
+export const getType = () => {
+  if (typeof window !== "undefined") {
+      return Cookies.get("type")
   }
-};
+}
 
-export const getUserType = (req = null) => {
-  if (req) {
-    const cookies = cookie.parse(req.headers.cookie || "");
-    return cookies[USER_TYPE] || null;
-  } else {
-    return Cookies.get(USER_TYPE) || null;
+export const removeToken = () => {
+  if (typeof window !== "undefined") {
+      Cookies.remove("token");
+      Cookies.remove("user_id");
+      Cookies.remove("email");
+      Cookies.remove("type");
   }
-};
-
-// Remove token from cookie
-export const removeTokenAndMobile = () => {
-  Cookies.remove(TOKEN_KEY);
-  Cookies.remove(USER_EMAIL);
-  Cookies.remove(USER_ID);
-  Cookies.remove(USER_TYPE);
-  Cookies.remove(PROFILE_STORE);
-};
+}

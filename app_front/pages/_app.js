@@ -4,52 +4,58 @@ import { ThemeProvider } from "@emotion/react";
 import theme from "@/config/thems";
 import store from "../config/store";
 import { ToastContainer } from 'react-toastify';
-import { Provider } from "react-redux";
+import { Provider,useDispatch  } from "react-redux";
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
-import { Loading } from "@/components";
-import { useRouter } from "next/router";
-import { useState,useEffect } from "react";
+import { useEffect } from "react";
+import { getToken, getUserId, getEmail, getType } from '@/utils/auth'; 
+import { loginSuccess } from "@/store/authSlice";
 
-const App = ({ Component, pageProps }) => {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
+const AuthManager = ({ children }) => {
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const handleStart = () => setLoading(true);
-    const handleComplete = () => setLoading(false);
+    const token = getToken(); 
 
-    router.events.on('routeChangeStart', handleStart);
-    router.events.on('routeChangeComplete', handleComplete);
-    router.events.on('routeChangeError', handleComplete);
+    if (token) {
+      const user_id = getUserId();
+      const email = getEmail();
+      const type = Number(getType());
 
-    return () => {
-      router.events.off('routeChangeStart', handleStart);
-      router.events.off('routeChangeComplete', handleComplete);
-      router.events.off('routeChangeError', handleComplete);
-    };
-  }, [router]);
+      const payload = { token, user_id, email, type };
+      console.log("APP PAGE: ",payload)
+      dispatch(loginSuccess(payload));
+    } else {
+        // اگر توکنی وجود نداشت، یک اکشن دیگر برای پایان دادن به حالت loading
+        // میتوان تعریف کرد یا اینکه مطمئن شویم reducer در حالت های دیگر loading را false میکند
+        // فعلا چون reducer ما در حالت fail هم لودینگ را false میکند، مشکلی نیست.
+    }
+  }, [dispatch]); // وابستگی dispatch برای جلوگیری از هشدار eslint
 
+  return children;
+}
+
+const App = ({ Component, pageProps }) => {
   return (
     <Provider store={store}>
-      {loading && <Loading />} 
-      <GoogleReCaptchaProvider
-          reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
-          scriptProps={{
-            async: true,
-            defer: true,
-            appendTo: "head",
-          }}
-        >
-      <ThemeProvider theme={theme}>
-        <Layout>
-          <div className="toastyfy">
-          <ToastContainer theme="dark"/>
-          </div>
-                 
-          <Component {...pageProps} />
-        </Layout> 
-      </ThemeProvider>
-      </GoogleReCaptchaProvider>
+      <AuthManager>
+        <GoogleReCaptchaProvider
+            reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+            scriptProps={{
+              async: true,
+              defer: true,
+              appendTo: "head",
+            }}
+          >
+        <ThemeProvider theme={theme}>
+          <Layout>
+            <div className="toastyfy">
+            <ToastContainer theme="dark"/>
+            </div>
+            <Component {...pageProps} />
+          </Layout> 
+        </ThemeProvider>
+        </GoogleReCaptchaProvider>
+      </AuthManager>      
     </Provider>           
   );
 }

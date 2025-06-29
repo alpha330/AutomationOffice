@@ -2,70 +2,72 @@ import actionTypse from "../config/actionTypes";
 
 const authReducer = ( state = {
   loading:false,
-  logged:false
+  logged:false,
+  token: 'action.response.token',
+  user_id: 0,
+  email: '',
+  type: 0,
 } ,action) => {
   switch (action.type) {
     case actionTypse.LOGIN_STARTED:
-      return{
+      return {
         ...state,
-        loading:action.loading,
-        logged:action.logged
+        loading: true,
+        logged: false
       }
     case actionTypse.LOGIN_SUCCESS:
-      return{
+      return {
         ...state,
-        loading:action.loading,
-        logged:action.logged,
-        error:false,
-        response:action.response
+        loading: false,
+        logged: true,
+        error: false,
+        token: action.response.token,
+        user_id: action.response.user_id,
+        email: action.response.email,
+        type: action.response.type,
       }
     case actionTypse.LOGIN_FAILED:
-      return{
+      return {
         ...state,
-        logged:action.logged,
-        loading:action.loading,
-        error:true,
-        error_message:action.error_message,
+        logged: false,
+        loading: false,
+        error: true,
+        error_message: action.error_message,
       }
     case actionTypse.REGISTER_STARTED:
       return{
         ...state,
-        loading:action.loading,
-        logged:action.logged
+        loading:true,
       }
     case actionTypse.REGISTER_SUCCESS:
     return{
       ...state,
-      loading:action.loading,
-      logged:action.logged,
+      loading:false,
       response:action.response,
     }
     case actionTypse.REGISTER_FAILED:
       return{
         ...state,
-        logged:action.logged,
-        loading:action.loading,
+        loading:false,
         error:action.error,
         error_message:action.error_message,
       }
     case actionTypse.LOGOUT_STARTED:
       return {
         ...state,
-        loading:action.loading,
-        logged:action.logged,
+        loading:true,
+        logged:false,
       };
     case actionTypse.LOGOUT_SUCCESS:
       return {
-        ...state,
-        loading:action.loading,
-        logged:action.logged,
-        response: action.response,
+        loading: false,
+        logged: false,
       };
     case actionTypse.LOGOUT_FAILED:
       return {
         ...state,
-        loading:action.loading,
-        logged:action.logged,
+        loading:false,
+        logged:true,
         error: action.error,
         error_message: action.error_message,
       };

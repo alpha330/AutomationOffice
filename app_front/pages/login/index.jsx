@@ -106,26 +106,51 @@ const Login = () => {
         
     const submitBehaviour = async (e) => {
         e.preventDefault();
-        const data = { mobile_number: email, password };
-      
-        if (!email || !password) return notify("پر کردن فرم الزامی است", "warning");
-      
+        const data = {
+            "email_or_mobile": email,
+            "password": password
+        };
+    
+        if (!email || !password) return notifyEngine("پر کردن فرم الزامی است", "warning");
+    
         const res = await dispatch(LOGIN_ACTION(data));
-        if (res.token) {
+    
+        if (res && res.token) { // <-- چک میکنیم که پاسخ معتبر و توکن دار باشد
+            // دریافت پروفایل کاربر
             const header = {
                 "Authorization": `token ${res.token}`,
                 "Content-Type": "application/json",
-              };
-            const resProfile = await dispatch(PROFILE_ACTION(header,"POST"))
-            setProfile(resProfile)
-            setToken(res.token,res.mobile);
-            dispatch(loginSuccess({ token: res.token, user: res.user }));
-            notifyEngine("خوش آمدید", "success");
-            router.push("/");
+            };
+            const resProfile = await dispatch(PROFILE_ACTION(header, "GET"));
+            setProfile(resProfile);
+    
+            // ذخیره اطلاعات در کوکی و Redux State
+            setToken(res.token, res.user_id, res.email, res.type);
+            dispatch(loginSuccess({ token: res.token, user_id: res.user_id, email: res.email, type: res.type }));
+    
+            notifyEngine(`خوش آمدید ${res.email}`, "success");
+    
+            // --- بخش اصلی تغییر ---
+            // ریدایرکت مستقیم به داشبورد مربوطه
+            switch (res.type) {
+                case 3 : // Superuser
+                    router.push("/SuperAdminDashboard");
+                    break;
+                case 2 : // Admin
+                    router.push("/AdminDashboard"); // این صفحه را باید بسازید
+                    break;
+                case 1 : // Client
+                    router.push("/UserDashboard"); // این صفحه را باید بسازید
+                    break;
+                default:
+                    router.push("/"); // به عنوان fallback
+                    break;
+            }
+    
         } else {
-          notifyEngine("ورود ناموفق", "error");
+            notifyEngine(res.message || "ورود ناموفق، نام کاربری یا رمز عبور اشتباه است", "error");
         }
-      };
+    };
 
     return(
         <>

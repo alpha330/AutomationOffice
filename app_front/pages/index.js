@@ -1,28 +1,38 @@
 import Head from "next/head";
 import IndexSectionOne from "@/containers/IndexSectionOne/IndexSectionOne";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { Loading } from "@/components";
+import { notifyEngine } from "@/utils/notifyEngine";
 
 
 const Home = () => {
-  const auths = useSelector( (state)=>(state.auth) )
-  console.log("TEST",auths)
   const router = useRouter()
-  useState(() => {
-    if (auths.logged){
-      if (auths.type === 1) {
-        router.push("/SuperAdminDashboard");
-      } else if (auths.type === 2) {
-        router.push("/AdminDashboard");
-      } else if (auths.type === 3) {
-        router.push("/UserDashboard");
-      } else {
-        router.push("/login");
+  const auth = useSelector((state) => state.auth);
+  console.log("DATA :" , auth)
+  useEffect(() => {
+    if (auth.logged) {
+      notifyEngine("شما لاگین هستید", "info");
+      switch(auth.type){
+        case 3:
+          router.push("/SuperAdminDashboard/")
+          break
+        case 2:
+          router.push("/AdminDashboard")
+          break
+        case 1:
+          router.push("/UserDashboard")
+          break
       }
-    }
+       
+  }
+  }, [auth.logged, auth.loading, auth.type, router]); 
 
-  },[])
+  // if (!auth.loading || auth.logged ) {
+  //   return <Loading />;
+  // }
+
   return (
     <>
       <Head>

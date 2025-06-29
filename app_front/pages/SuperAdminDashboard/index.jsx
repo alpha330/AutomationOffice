@@ -5,8 +5,10 @@ import Head from "next/head";
 import { useState } from "react";
 import AdminAccounting from "@/containers/AdminAccounting/AdminAccounting";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { Loading } from "@/components";
+import { notifyEngine } from "@/utils/notifyEngine";
 
 const SuperAdminDashboard = () => {
   const [activeSection, setActiveSection] = useState("accounting");
@@ -15,16 +17,22 @@ const SuperAdminDashboard = () => {
     setActiveSection(section);
   };
   const router = useRouter()
-  const auths = useSelector((state) => state.auth);
+  const auth = useSelector((state) => state.auth);
+
   useEffect(() => {
-    
-    if (!auths.logged) {
-      router.push("/");
-    } else if (auths.type !== 1) {
-      router.push("/");
+    console.log("SuperAdminDashboard PAGE :",auth.type)
+    if (auth.loading === false) {
+        if (!auth.logged || auth.type !== 3) {
+            notifyEngine("شما اجازه دسترسی به این صفحه را ندارید", "error");
+            router.push('/');
+        }
     }
+  }, [auth.logged, auth.loading, auth.type, router]); 
+
+  if ( !auth.logged || auth.type !== 3) {
+    return <Loading />;
   }
-  ,[])
+
   const adminMainDashboard = css`
     width: 100%;
     min-height: 100vh;
