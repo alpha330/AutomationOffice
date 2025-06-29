@@ -1,25 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { LOGOUT_ACTION } from "@/actions/auth";
-import { getToken, getEmail, removeTokenAndMobile } from "@/utils/auth";
-import { notifyEngine } from "@/utils/notifyEngine";
-import { ShamsiDateAndTime } from "..";
+import { useSelector } from "react-redux";
+import { ShamsiDateAndTime,UserSpecification } from "..";
 
 const Header = () => {
-  const dispatch = useDispatch();
   const auth = useSelector(state => state.auth);
 
   const [isScrolling, setIsScrolling] = useState(false);
-  const [loginStatus, setLoginStatus] = useState(false);
-
-  const token = getToken();
-  const email = getEmail();
-
-  useEffect(() => {
-    setLoginStatus(Boolean(token && email));
-  }, [token, email]);
 
   useEffect(() => {
     let scrollTimeout;
@@ -37,16 +25,7 @@ const Header = () => {
     };
   }, []);
 
-  const handleLogout = () => {
-    const header = {
-      "Authorization": `token ${token}`,
-      "Content-Type": "application/json",
-    };
-    dispatch(LOGOUT_ACTION(header));
-    removeTokenAndMobile();
-    notifyEngine("خروج با موفقیت انجام شد", "success");
-    setLoginStatus(false);
-  };
+  
 
   // Styles
   const styles = {
@@ -75,6 +54,7 @@ const Header = () => {
     <div css={styles.header}>
       <img css={styles.logo} src="/logo_white-150x150.png" alt="ARG LOGO" />
       <ShamsiDateAndTime />
+      <UserSpecification/>
     </div>
   );
 };

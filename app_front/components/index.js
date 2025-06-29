@@ -10,4 +10,5 @@ export {default as SliderPrice} from "./SliderPrice/SliderPrice";
 export {default as SelectInput} from "./SelectInput/SelectInput";
 export {default as Loading} from "./loading/loading";
 export {default as ShamsiDateAndTime} from "./ShamsiDateAndTime/ShamsiDateAndTime";
+export {default as UserSpecification} from "./UserSpecification/UserSpecification";
 export { H1,H2,H3,H4,H5,Small,Paragraph } from "./TypoGraphy";

@@ -13,6 +13,5 @@ export const HeaderComponent = () => {
     <ThemeProvider theme={theme}>
         <Header/>
     </ThemeProvider>
-    
   )
 };

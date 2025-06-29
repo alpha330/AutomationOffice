@@ -1,7 +1,9 @@
 import reduxCall from "@/utils/reduxCall"
-import { setToken,removeTokenAndMobile } from "@/utils/auth";
+import { setToken,removeToken } from "@/utils/auth";
+import { useRouter } from "next/router";
 
 const LOGIN_ACTION = (data = {}) => {
+  
   return async dispatch => {
     try {
       const response = await reduxCall(dispatch, {
@@ -34,9 +36,7 @@ const LOGOUT_ACTION = (headers = {}) => {
         name: 'LOGOUT',
         headers: headers,
       });
-
-      removeTokenAndMobile(); // حذف توکن بعد از logout
-
+      removeToken();       
       return response;
 
     } catch (err) {

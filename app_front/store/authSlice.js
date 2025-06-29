@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  loading: true, 
+  loading: false, 
   logged: false,
   token: null,
   user_id: null,
@@ -39,6 +39,7 @@ const authSlice = createSlice({
       return {
         ...initialState,
         loading: false,
+        logged: false,
       };
     },
   },
