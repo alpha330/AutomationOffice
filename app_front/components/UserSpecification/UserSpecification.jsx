@@ -53,7 +53,7 @@ const UserSpecification = () => {
         profile: css`
             height: 2.5rem;
             border-radius: 50%;
-            background-image:url(${profile.image !== "" ? `${profile.image})` :"./images/logo.jpg;"});
+            background-image:${profile.image === "" ? `url(${profile.image})` :"url(./images/logo.jpg);"});
             width: 2.5rem;
             cursor:pointer;
             position:absolute;
