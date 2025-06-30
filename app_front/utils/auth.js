@@ -1,11 +1,9 @@
 import Cookies from "js-cookie";
-import cookie, { parse } from "cookie";
 
 const TOKEN_KEY = "token";
 const USER_ID = "user_id";
 const USER_EMAIL = "email";
 const USER_TYPE = "type";
-const PROFILE_STORE = "profile";
 
 // Set token in cookie (client side)
 export const setToken = (token,user_id,email,type) => {

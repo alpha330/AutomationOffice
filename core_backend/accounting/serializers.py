@@ -27,12 +27,12 @@ class UserLoginDeviceSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['id', 'user', 'first_name', 'last_name', 'phone_number', 'image', 'created_date']
+        fields = ['id', 'user', 'first_name', 'last_name', 'phone_number', 'image',"signitures","date_of_birth" , 'created_date',"updated_date"]
 
 class ProfileSerializerUpdate(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = [ 'first_name', 'last_name', 'phone_number', 'image']
+        fields = [ 'first_name', 'last_name', 'phone_number', 'image',"signitures","date_of_birth"]
 
 class RegisterSerializer(serializers.ModelSerializer):
     """

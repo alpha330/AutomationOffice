@@ -115,60 +115,61 @@ const Login = () => {
     
         if (!email || !password) return notifyEngine("پر کردن فرم الزامی است", "warning");
     
-        const res = await dispatch(LOGIN_ACTION(data));
+        // مرحله ۱: لاگین کاربر
+        const loginRes = await dispatch(LOGIN_ACTION(data));
     
-        if (res && res.token) { // <-- چک میکنیم که پاسخ معتبر و توکن دار باشد
-            // دریافت پروفایل کاربر
-            const header = {
-                "Authorization": `token ${res.token}`,
-                "Content-Type": "application/json",
-                "id": res.id,
-            };
-            const resProfile = await dispatch(PROFILE_ACTION(header,"GET"));
-            setProfile(
-                resProfile.first_name,
-                resProfile.last_name,image,
-                resProfile.signitures,
-                resProfile.date_of_birth,
-                resProfile.created_date,
-                resProfile.updated_date,
-                resProfile.phone_number
-            );
+        if (loginRes && loginRes.token) {
+            try {
+                // مرحله ۲: ذخیره توکن و آپدیت Redux برای لاگین
+                setToken(loginRes.token, loginRes.user_id, loginRes.email, loginRes.type);
+                dispatch(loginSuccess({ token: loginRes.token, user_id: loginRes.user_id, email: loginRes.email, type: loginRes.type }));
     
-            // ذخیره اطلاعات در کوکی و Redux State
-            setToken(res.token, res.user_id, res.email, res.type);
-            dispatch(loginSuccess({ token: res.token, user_id: res.user_id, email: res.email, type: res.type }));
-            const payload = {
-                firstName:resProfile.firstName,
-                lastName:resProfile.lastName,
-                phoneNumber:resProfile.phoneNumber,
-                image:resProfile.image, 
-                birthDate:resProfile.birthDate, 
-                createDate:resProfile.createDate, 
-                updatedDate:resProfile.updatedDate
-            };
-            dispatch(profileSuccess(payload))
-            notifyEngine(`خوش آمدید ${res.email}`, "success");
+                // مرحله ۳: دریافت پروفایل کاربر
+                const header = {
+                    "Authorization": `token ${loginRes.token}`,
+                    "Content-Type": "application/json",
+                };
+                const profileRes = await dispatch(PROFILE_ACTION(header, "GET"));
     
-            // --- بخش اصلی تغییر ---
-            // ریدایرکت مستقیم به داشبورد مربوطه
-            switch (res.type) {
-                case 3 : // Superuser
-                    router.push("/SuperAdminDashboard");
-                    break;
-                case 2 : // Admin
-                    router.push("/AdminDashboard"); // این صفحه را باید بسازید
-                    break;
-                case 1 : // Client
-                    router.push("/UserDashboard"); // این صفحه را باید بسازید
-                    break;
-                default:
-                    router.push("/"); // به عنوان fallback
-                    break;
+                if (profileRes) { // چک میکنیم که اطلاعات پروفایل با موفقیت دریافت شده باشد
+                    // مرحله ۴: ذخیره اطلاعات پروفایل در Redux با فرمت صحیح
+                    // فرض بر این است که API کلیدها را به صورت snake_case برمیگرداند
+                    const profilePayload = {
+                        first_name: profileRes.first_name,
+                        last_name: profileRes.last_name,
+                        phone_number: profileRes.phone_number,
+                        image: profileRes.image,
+                        signitures: profileRes.signitures,
+                        date_of_birth: profileRes.date_of_birth,
+                        created_date: profileRes.created_date,
+                        updated_date: profileRes.updated_date,
+                    };
+                    console.log("LOGIN PROFILE : ",profileRes)
+                    dispatch(profileSuccess(profilePayload));
+    
+                    // ذخیره در localStorage/sessionStorage (اختیاری)
+                    setProfile(profilePayload); // بهتر است کل آبجکت را پاس دهید تا تابع setProfile آن را مدیریت کند
+                } else {
+                    throw new Error("اطلاعات پروفایل دریافت نشد.");
+                }
+                
+                notifyEngine(`خوش آمدید ${loginRes.email}`, "success");
+    
+                // مرحله ۵: ریدایرکت کاربر
+                switch (loginRes.type) {
+                    case 3: router.push("/SuperAdminDashboard"); break;
+                    case 2: router.push("/AdminDashboard"); break;
+                    case 1: router.push("/UserDashboard"); break;
+                    default: router.push("/"); break;
+                }
+    
+            } catch (error) {
+                console.error("Error after login:", error);
+                notifyEngine("خطایی پس از ورود رخ داد. لطفا دوباره تلاش کنید.", "error");
+                // اینجا میتوانید توکن را پاک کنید اگر فرآیند ناقص مانده
             }
-    
         } else {
-            notifyEngine(res.message || "ورود ناموفق، نام کاربری یا رمز عبور اشتباه است", "error");
+            notifyEngine(loginRes.message || "ورود ناموفق، نام کاربری یا رمز عبور اشتباه است", "error");
         }
     };
 

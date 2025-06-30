@@ -13,7 +13,7 @@ const UserSpecification = () => {
     const [showMenu,setShowMenu] = useState(false)
 
 
-    useEffect(async() => {
+    useEffect(() => {
         setLoginStatus(Boolean(auth.token && auth.email));
     }, [auth.token, auth.email,auth.logged]);
 

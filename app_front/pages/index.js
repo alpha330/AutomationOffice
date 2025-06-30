@@ -10,7 +10,6 @@ import { notifyEngine } from "@/utils/notifyEngine";
 const Home = () => {
   const router = useRouter()
   const auth = useSelector((state) => state.auth);
-  console.log("DATA :" , auth)
   useEffect(() => {
     if (auth.logged) {
       notifyEngine("شما لاگین هستید", "info");

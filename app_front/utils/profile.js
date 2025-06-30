@@ -1,84 +1,41 @@
-import Cookies from "js-cookie";
 
-const FIRST_NAME = "first_name";
-const LAST_NAME = "last_name";
-const PROFILE_IMAGE = "image";
-const USER_PHONENUMBER = "phone_number";
-const USER_SIGNITURE = "signitures";
-const BIRTH_DATE = "date_of_birth";
-const CREATED_DATE = "created_date";
-const UPDATED_DATE = "updated_date";
+const PROFILE_KEY = "user_profile";
 
-// Set Profiles in cookie (client side)
-export const setProfile = (first_name,last_name,image,signitures,date_of_birth,created_date,updated_date,phone_number) => {
-  Cookies.set(FIRST_NAME, first_name, { expires: 1 }); // 1 روز
-  Cookies.set(LAST_NAME, last_name, { expires: 1 }); // 1 روز
-  Cookies.set(PROFILE_IMAGE, image, { expires: 1 }); // 1 روز
-  Cookies.set(USER_PHONENUMBER, phone_number, { expires: 1 }); // 1 روز
-  Cookies.set(USER_SIGNITURE, signitures, { expires: 1 }); // 1 روز
-  Cookies.set(BIRTH_DATE, date_of_birth, { expires: 1 }); // 1 روز
-  Cookies.set(CREATED_DATE, created_date, { expires: 1 }); // 1 روز
-  Cookies.set(UPDATED_DATE, updated_date, { expires: 1 }); // 1 روز
+/**
+ * کل آبجکت پروفایل را به صورت یک رشته JSON در localStorage ذخیره می‌کند.
+ * @param {object} profileData - آبجکتی شامل تمام اطلاعات پروفایل.
+ */
+export const setProfile = (profileData) => {
+  if (typeof window !== "undefined") {
+    // فقط آبجکت‌های غیر نال را ذخیره می‌کنیم تا از خطا جلوگیری شود
+    if (profileData && typeof profileData === 'object') {
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(profileData));
+    }
+  }
 };
 
-
-export const getFirstName = () => {
+/**
+ * آبجکت پروفایل را از localStorage بازیابی و به صورت آبجکت جاوااسکریپت برمی‌گرداند.
+ * @returns {object | null} - آبجکت پروفایل یا در صورت عدم وجود، null.
+ */
+export const getProfile = () => {
   if (typeof window !== "undefined") {
-      return Cookies.get("first_name")
+    const profileString = localStorage.getItem(PROFILE_KEY);
+    try {
+      return profileString ? JSON.parse(profileString) : null;
+    } catch (e) {
+      console.error("Failed to parse profile data from localStorage", e);
+      return null;
+    }
   }
-}
+  return null;
+};
 
-export const getLastName = () => {
-  if (typeof window !== "undefined") {
-      return Cookies.get("last_name")
-  }
-}
-
-export const getImage = () => {
-  if (typeof window !== "undefined") {
-      return Cookies.get("image")
-  }
-}
-
-export const getPhoneNumber = () => {
-  if (typeof window !== "undefined") {
-      return Cookies.get("phone_number")
-  }
-}
-
-export const getBirthDate = () => {
-  if (typeof window !== "undefined") {
-      return Cookies.get("date_of_birth")
-  }
-}
-
-export const getSigniture = () => {
-  if (typeof window !== "undefined") {
-      return Cookies.get("signitures")
-  }
-}
-
-export const getCreatedDate= () => {
-  if (typeof window !== "undefined") {
-      return Cookies.get("created_date")
-  }
-}
-
-export const getUpdatedDate= () => {
-  if (typeof window !== "undefined") {
-      return Cookies.get("updated_date")
-  }
-}
-
+/**
+ * اطلاعات پروفایل را از localStorage حذف می‌کند.
+ */
 export const removeProfile = () => {
   if (typeof window !== "undefined") {
-      Cookies.remove("first_name");
-      Cookies.remove("last_name");
-      Cookies.remove("image");
-      Cookies.remove("signitures");
-      Cookies.remove("phone_number");
-      Cookies.remove("date_of_birth");
-      Cookies.remove("created_date");
-      Cookies.remove("updated_date");
+    localStorage.removeItem(PROFILE_KEY);
   }
-}
+};
