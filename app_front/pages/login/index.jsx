@@ -129,22 +129,22 @@ const Login = () => {
                     "Authorization": `token ${loginRes.token}`,
                     "Content-Type": "application/json",
                 };
-                const profileRes = await dispatch(PROFILE_ACTION(header, "GET"));
+                const profileData = await dispatch(PROFILE_ACTION(header, "GET"));
     
-                if (profileRes) { // چک میکنیم که اطلاعات پروفایل با موفقیت دریافت شده باشد
+                if (profileData) { // چک میکنیم که اطلاعات پروفایل با موفقیت دریافت شده باشد
                     // مرحله ۴: ذخیره اطلاعات پروفایل در Redux با فرمت صحیح
                     // فرض بر این است که API کلیدها را به صورت snake_case برمیگرداند
                     const profilePayload = {
-                        first_name: profileRes.first_name,
-                        last_name: profileRes.last_name,
-                        phone_number: profileRes.phone_number,
-                        image: profileRes.image,
-                        signitures: profileRes.signitures,
-                        date_of_birth: profileRes.date_of_birth,
-                        created_date: profileRes.created_date,
-                        updated_date: profileRes.updated_date,
+                        first_name: profileData.first_name,
+                        last_name: profileData.last_name,
+                        phone_number: profileData.phone_number,
+                        image: profileData.image,
+                        signitures: profileData.signitures,
+                        date_of_birth: profileData.date_of_birth,
+                        created_date: profileData.created_date,
+                        updated_date: profileData.updated_date,
                     };
-                    console.log("LOGIN PROFILE : ",profileRes)
+                    console.log("LOGIN PROFILE : ",profilePayload)
                     dispatch(profileSuccess(profilePayload));
     
                     // ذخیره در localStorage/sessionStorage (اختیاری)

@@ -1,15 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { NavItemRxplorer,CheckBoxFlight,Inputs,Button} from "@/components";
+import { Inputs,Button} from "@/components";
 import { useEffect, useState } from "react";
 import { BsFillInfoCircleFill } from "react-icons/bs";
 import { notifyEngine } from "@/utils/notifyEngine";
-import { setToken ,getToken,setProfile} from "@/utils/auth";
+import { setToken } from "@/utils/auth";
+import { setProfile } from "@/utils/profile";
 import { useDispatch,useSelector } from "react-redux";
 import { LOGIN_ACTION } from "@/actions/auth";
 import { PROFILE_ACTION } from "@/actions/profile";
 import { useRouter } from "next/router";
 import { loginSuccess } from "@/store/authSlice";
+import { profileSuccess } from "@/store/profileSlice";
 import CustomeCheckBox from "@/components/CheckBox/CheckBox";
 
 const LoginMain = () => {
@@ -104,32 +106,70 @@ const LoginMain = () => {
     }
 
     const submitBehaviour = async (e) => {
-        e.preventDefault();
-        const data = { 
-            "email_or_mobile": userName,
-            "password":password
-
-         };
-      
-        if (!userName || !password) return notify("پر کردن فرم الزامی است", "warning");
-      
-        const res = await dispatch(LOGIN_ACTION(data));
-        console.log("RES",res)
-        if (res.token) {
-            const header = {
-                "Authorization": `token ${res.token}`,
-                "Content-Type": "application/json",
-              };
-            const resProfile = await dispatch(PROFILE_ACTION(header,"GET"))
-            setProfile(resProfile)
-            setToken(res.token,res.user_id,res.email,res.type);
-            dispatch(loginSuccess({ token: res.token, user: res.user_id, email:res.email, type:res.type }));
-            notifyEngine(`خوش آمدید ${res.email}`, "success");
-            router.push("/");
-        } else {
-          notifyEngine("ورود ناموفق", "error");
-        }
-      };
+            e.preventDefault();
+            const data = {
+                "email_or_mobile": userName,
+                "password": password
+            };
+        
+            if (!userName || !password) return notifyEngine("پر کردن فرم الزامی است", "warning");
+        
+            // مرحله ۱: لاگین کاربر
+            const loginRes = await dispatch(LOGIN_ACTION(data));
+        
+            if (loginRes && loginRes.token) {
+                try {
+                    // مرحله ۲: ذخیره توکن و آپدیت Redux برای لاگین
+                    setToken(loginRes.token, loginRes.user_id, loginRes.email, loginRes.type);
+                    dispatch(loginSuccess({ token: loginRes.token, user_id: loginRes.user_id, email: loginRes.email, type: loginRes.type }));
+        
+                    // مرحله ۳: دریافت پروفایل کاربر
+                    const header = {
+                        "Authorization": `token ${loginRes.token}`,
+                        "Content-Type": "application/json",
+                    };
+                    const profileData = await dispatch(PROFILE_ACTION(header, "GET"));
+        
+                    if (profileData) { // چک میکنیم که اطلاعات پروفایل با موفقیت دریافت شده باشد
+                        // مرحله ۴: ذخیره اطلاعات پروفایل در Redux با فرمت صحیح
+                        // فرض بر این است که API کلیدها را به صورت snake_case برمیگرداند
+                        const profilePayload = {
+                            first_name: profileData.first_name,
+                            last_name: profileData.last_name,
+                            phone_number: profileData.phone_number,
+                            image: profileData.image,
+                            signitures: profileData.signitures,
+                            date_of_birth: profileData.date_of_birth,
+                            created_date: profileData.created_date,
+                            updated_date: profileData.updated_date,
+                        };
+                        dispatch(profileSuccess(profilePayload));
+        
+                        // ذخیره در localStorage/sessionStorage (اختیاری)
+                        setProfile(profilePayload); // بهتر است کل آبجکت را پاس دهید تا تابع setProfile آن را مدیریت کند
+                    } else {
+                        throw new Error("اطلاعات پروفایل دریافت نشد.");
+                    }
+                    
+                    notifyEngine(`خوش آمدید ${loginRes.email}`, "success");
+        
+                    // مرحله ۵: ریدایرکت کاربر
+                    switch (loginRes.type) {
+                        case 3: router.push("/SuperAdminDashboard"); break;
+                        case 2: router.push("/AdminDashboard"); break;
+                        case 1: router.push("/UserDashboard"); break;
+                        default: router.push("/"); break;
+                    }
+        
+                } catch (error) {
+                    console.error("Error after login:", error);
+                    notifyEngine("خطایی پس از ورود رخ داد. لطفا دوباره تلاش کنید.", "error");
+                    // اینجا میتوانید توکن را پاک کنید اگر فرآیند ناقص مانده
+                }
+            } else {
+                notifyEngine(loginRes.message || "ورود ناموفق، نام کاربری یا رمز عبور اشتباه است", "error");
+            }
+        };
 
     return(
         <div css={mainLoginDiv}>
