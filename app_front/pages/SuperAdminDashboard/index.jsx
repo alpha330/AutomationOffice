@@ -25,8 +25,9 @@ const SuperAdminDashboard = () => {
     if (auth.loading === false) {
       // اگر کاربر لاگین نبود یا نوع او Admin (یعنی 2) نبود
       if (!auth.logged || auth.type !== 3) { // <-- اصلاح شد به 2
-        notifyEngine("شما اجازه دسترسی به این صفحه را ندارید", "error");
         router.push('/'); 
+        notifyEngine("شما اجازه دسترسی به این صفحه را ندارید", "error");
+        
       }
     }
     // --- تغییر اصلی و حیاتی ---

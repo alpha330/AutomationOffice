@@ -15,11 +15,6 @@ export const setToken = (token,user_id,email,type) => {
   Cookies.set(USER_TYPE, type, { expires: 1 }); // 1 روز
 };
 
-export const setProfile = (profile = {}) => {
-  Cookies.set(PROFILE_STORE, JSON.stringify(profile), { expires: 1 }); // 1 روز
-};
-
-
 export const getToken = () => {
   if (typeof window !== "undefined") {
       return Cookies.get("token")

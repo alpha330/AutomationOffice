@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import rootReducers from "../reducers"; 
-import thunk from "redux-thunk";
 import authReducer from '../store/authSlice';
+import profileReducer from "../store/profileSlice"
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
+    profile: profileReducer,
   },
 });
 

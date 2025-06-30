@@ -8,8 +8,10 @@ import { useDispatch,useSelector } from "react-redux";
 import { LOGIN_ACTION } from "@/actions/auth";
 import { PROFILE_ACTION } from "@/actions/profile";
 import { useRouter } from "next/router";
-import { setToken ,getToken,setProfile} from "@/utils/auth";
+import { setToken ,getToken} from "@/utils/auth";
+import { setProfile } from "@/utils/profile";
 import { loginSuccess } from "@/store/authSlice";
+import { profileSuccess } from "@/store/profileSlice";
 import { notifyEngine } from "@/utils/notifyEngine";
 
 
@@ -120,14 +122,32 @@ const Login = () => {
             const header = {
                 "Authorization": `token ${res.token}`,
                 "Content-Type": "application/json",
+                "id": res.id,
             };
-            const resProfile = await dispatch(PROFILE_ACTION(header, "GET"));
-            setProfile(resProfile);
+            const resProfile = await dispatch(PROFILE_ACTION(header,"GET"));
+            setProfile(
+                resProfile.first_name,
+                resProfile.last_name,image,
+                resProfile.signitures,
+                resProfile.date_of_birth,
+                resProfile.created_date,
+                resProfile.updated_date,
+                resProfile.phone_number
+            );
     
             // ذخیره اطلاعات در کوکی و Redux State
             setToken(res.token, res.user_id, res.email, res.type);
             dispatch(loginSuccess({ token: res.token, user_id: res.user_id, email: res.email, type: res.type }));
-    
+            const payload = {
+                firstName:resProfile.firstName,
+                lastName:resProfile.lastName,
+                phoneNumber:resProfile.phoneNumber,
+                image:resProfile.image, 
+                birthDate:resProfile.birthDate, 
+                createDate:resProfile.createDate, 
+                updatedDate:resProfile.updatedDate
+            };
+            dispatch(profileSuccess(payload))
             notifyEngine(`خوش آمدید ${res.email}`, "success");
     
             // --- بخش اصلی تغییر ---

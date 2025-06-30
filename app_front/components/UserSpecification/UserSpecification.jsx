@@ -4,12 +4,16 @@ import { useSelector, useDispatch } from "react-redux";
 import { LOGOUT_ACTION } from "@/actions/auth";
 import { useEffect, useState } from "react";
 import { notifyEngine } from "@/utils/notifyEngine";
+
 const UserSpecification = () => {
     const dispatch = useDispatch();
     const auth = useSelector(state => state.auth);
+    const profile = useSelector(state => state.profile);
     const [loginStatus, setLoginStatus] = useState(false);
     const [showMenu,setShowMenu] = useState(false)
-    useEffect(() => {
+
+
+    useEffect(async() => {
         setLoginStatus(Boolean(auth.token && auth.email));
     }, [auth.token, auth.email,auth.logged]);
 
@@ -49,11 +53,12 @@ const UserSpecification = () => {
         profile: css`
             height: 2.5rem;
             border-radius: 50%;
-            background-color: white;
+            background-image:url(${profile.image !== "" ? `${profile.image})` :"./images/logo.jpg;"});
             width: 2.5rem;
             cursor:pointer;
             position:absolute;
             transition: all 400ms ease-in;
+            border:1px solid #008cff;
         `
         ,
         menuBar: css`
