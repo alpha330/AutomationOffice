@@ -1,8 +1,7 @@
 import actionTypse from "../config/actionTypes";
-
 const authReducer = ( state = {
   loading:false,
-  logged:false,
+  logged:true,
   token: 'action.response.token',
   user_id: 0,
   email: '',

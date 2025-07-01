@@ -1,6 +1,7 @@
 import reduxCall from "@/utils/reduxCall"
 import { setToken,removeToken } from "@/utils/auth";
-import { useRouter } from "next/router";
+import { removeProfile } from "@/utils/profile";
+
 
 const LOGIN_ACTION = (data = {}) => {
   
@@ -36,7 +37,8 @@ const LOGOUT_ACTION = (headers = {}) => {
         name: 'LOGOUT',
         headers: headers,
       });
-      removeToken();       
+      removeToken(); 
+      removeProfile();      
       return response;
 
     } catch (err) {

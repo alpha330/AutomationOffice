@@ -4,6 +4,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { LOGOUT_ACTION } from "@/actions/auth";
 import { useEffect, useState } from "react";
 import { notifyEngine } from "@/utils/notifyEngine";
+import { useRouter } from "next/router";
+import { Loading } from "..";
+import Link from "next/link";
 
 const UserSpecification = () => {
     const dispatch = useDispatch();
@@ -11,7 +14,7 @@ const UserSpecification = () => {
     const profile = useSelector(state => state.profile);
     const [loginStatus, setLoginStatus] = useState(false);
     const [showMenu,setShowMenu] = useState(false)
-
+    const router = useRouter()
 
     useEffect(() => {
         setLoginStatus(Boolean(auth.token && auth.email));
@@ -25,12 +28,15 @@ const UserSpecification = () => {
         }
     }
 
+
     const handleLogout = () => {
         const header = {
           "Authorization": `token ${auth.token}`,
           "Content-Type": "application/json",
         };
+
         dispatch(LOGOUT_ACTION(header));
+        router.push("/")
         notifyEngine("خروج با موفقیت انجام شد", "success");
         setLoginStatus(false);
       };
@@ -65,7 +71,7 @@ const UserSpecification = () => {
             position: relative;
             top: 99%;
             right: 174%;
-            width: 6rem;
+            width: 8rem;
             height: 10rem;
             background-color: rgba(0, 0, 0, 0.36);
             transition: all 400ms ease-in;
@@ -85,21 +91,31 @@ const UserSpecification = () => {
             font-size:1rem;
             border-bottom:0px solid #008cff;
             text-align:center;
+            appearance: none;
+            text-decoration:none;
             &:hover {
                 border-bottom:1px solid #008cff;
             }
+            
         `
       };
     return (
         <div css={styles.general}>
             <div onClick={BtnClick} css={styles.profile}>
                 <div css={styles.menuBar}>
-                    <div css={styles.menuItem}>
+                    {auth.type === 3 ? 
+                    <Link href={"/SuperAdminDashboard"} css={styles.menuItem}>
+                    داشبورد کنترل
+                    </Link>
+                    :
+                    <></> 
+                    }                    
+                    <Link href={"/Profile"} css={styles.menuItem}>
                         پروفایل
-                    </div>
-                    <div onClick={handleLogout} css={styles.menuItem}>
+                    </Link>
+                    <Link href={"/"} onClick={handleLogout} css={styles.menuItem}>
                         خروج
-                    </div>
+                    </Link>
                 </div>
             </div>
         </div>

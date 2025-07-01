@@ -24,6 +24,7 @@ const SuperAdminDashboard = () => {
     // فقط زمانی که بررسی اولیه لاگین تمام شد، منطق را اجرا کن
     if (auth.loading === false) {
       // اگر کاربر لاگین نبود یا نوع او Admin (یعنی 2) نبود
+      console.log("DASHBOARD SADMIN :",auth.type)
       if (!auth.logged || auth.type !== 3) { // <-- اصلاح شد به 2
         router.push('/'); 
         notifyEngine("شما اجازه دسترسی به این صفحه را ندارید", "error");

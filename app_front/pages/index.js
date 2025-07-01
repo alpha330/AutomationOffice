@@ -11,17 +11,19 @@ const Home = () => {
   const router = useRouter()
   const auth = useSelector((state) => state.auth);
   useEffect(() => {
-    if (auth.logged) {
-      notifyEngine("شما لاگین هستید", "info");
+    if (auth.logged) {      
       switch(auth.type){
-        case 3:
+        case 3:          
           router.push("/SuperAdminDashboard/")
+          notifyEngine("شما لاگین هستید", "info");
           break
         case 2:
           router.push("/AdminDashboard")
+          notifyEngine("شما لاگین هستید", "info");
           break
         case 1:
           router.push("/UserDashboard")
+          notifyEngine("شما لاگین هستید", "info");
           break
       }
        
