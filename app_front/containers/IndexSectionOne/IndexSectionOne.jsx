@@ -1,14 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import LoginMain from "../Login/Login";
-import { useSelector } from "react-redux";
 
 const IndexSectionOne = () => {
-  const logged = useSelector(state => state.auth.logged ?? false);
-
-  if (typeof logged === 'undefined') {
-    return <div>در حال بارگذاری...</div>;
-  }
 
   const mainDivIndxSecOne = css`
     width:100%;
@@ -37,12 +31,7 @@ const IndexSectionOne = () => {
   return (
     <div css={mainDivIndxSecOne}>
       <div css={upperMainText}>
-        
-        {!logged && (
-          <>
             <LoginMain />            
-          </>
-        )}
       </div>      
     </div>
   );
