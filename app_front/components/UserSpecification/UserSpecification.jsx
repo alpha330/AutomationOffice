@@ -4,8 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { LOGOUT_ACTION } from "@/actions/auth";
 import { useEffect, useState } from "react";
 import { notifyEngine } from "@/utils/notifyEngine";
-import { useRouter } from "next/router";
-import { Loading } from "..";
+import { getLogged,getToken,getType } from "@/utils/auth";
 import Link from "next/link";
 
 const UserSpecification = () => {
@@ -14,11 +13,13 @@ const UserSpecification = () => {
     const profile = useSelector(state => state.profile);
     const [loginStatus, setLoginStatus] = useState(false);
     const [showMenu,setShowMenu] = useState(false)
-    const router = useRouter()
+    const loggedStatus = getLogged()
+    const userType = Number(getType())
+    const userToken = getToken()
 
     useEffect(() => {
-        setLoginStatus(Boolean(auth.token && auth.email));
-    }, [auth.token, auth.email,auth.logged]);
+        setLoginStatus(Boolean(loggedStatus));
+    }, [loggedStatus]);
 
     const BtnClick = () =>{
         if(showMenu){
@@ -31,12 +32,10 @@ const UserSpecification = () => {
 
     const handleLogout = () => {
         const header = {
-          "Authorization": `token ${auth.token}`,
+          "Authorization": `token ${userToken}`,
           "Content-Type": "application/json",
         };
-
         dispatch(LOGOUT_ACTION(header));
-        router.push("/")
         notifyEngine("خروج با موفقیت انجام شد", "success");
         setLoginStatus(false);
       };
@@ -103,7 +102,7 @@ const UserSpecification = () => {
         <div css={styles.general}>
             <div onClick={BtnClick} css={styles.profile}>
                 <div css={styles.menuBar}>
-                    {auth.type === 3 ? 
+                    {userType === 3 ? 
                     <Link href={"/SuperAdminDashboard"} css={styles.menuItem}>
                     داشبورد کنترل
                     </Link>

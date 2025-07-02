@@ -122,7 +122,7 @@ const LoginMain = () => {
             if (loginRes && loginRes.token) {
                 try {
                     // مرحله ۲: ذخیره توکن و آپدیت Redux برای لاگین
-                    setToken(loginRes.token, loginRes.user_id, loginRes.email, loginRes.type);
+                    setToken(loginRes.token, loginRes.user_id, loginRes.email, loginRes.type,true);
                     dispatch(loginSuccess({ token: loginRes.token, user_id: loginRes.user_id, email: loginRes.email, type: loginRes.type }));
         
                     // مرحله ۳: دریافت پروفایل کاربر
