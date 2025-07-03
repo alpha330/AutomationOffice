@@ -1,25 +1,24 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { LOGOUT_ACTION } from "@/actions/auth";
 import { useEffect, useState } from "react";
 import { notifyEngine } from "@/utils/notifyEngine";
 import { getLogged,getToken,getType } from "@/utils/auth";
+import { getProfile } from "@/utils/profile";
 import Link from "next/link";
 
 const UserSpecification = () => {
     const dispatch = useDispatch();
-    const auth = useSelector(state => state.auth);
-    const profile = useSelector(state => state.profile);
-    const [loginStatus, setLoginStatus] = useState(false);
     const [showMenu,setShowMenu] = useState(false)
     const loggedStatus = getLogged()
     const userType = Number(getType())
     const userToken = getToken()
+    const userProfile = getProfile()
+    console.log("AVATAR SEC :",userProfile)
 
     useEffect(() => {
-        setLoginStatus(Boolean(loggedStatus));
-    }, [loggedStatus]);
+    }, []);
 
     const BtnClick = () =>{
         if(showMenu){
@@ -47,7 +46,7 @@ const UserSpecification = () => {
             height:100%;
             background-color: rgba(0, 0, 0, 0.57);
             font-size: 1.5rem;
-            display:${loginStatus ? "flex ;" : "none ;"}
+            display:${loggedStatus ? 'flex' : 'none'};
             align-items: center;
             justify-content: center;
             flex-direction:column;
@@ -58,7 +57,7 @@ const UserSpecification = () => {
         profile: css`
             height: 2.5rem;
             border-radius: 50%;
-            background-image:${profile.image === "" ? `url(${profile.image})` :"url(./images/logo.jpg);"});
+            background-image:url(${userProfile.image !== null ? userProfile.image :"./images/logo.jpg"});
             width: 2.5rem;
             cursor:pointer;
             position:absolute;
@@ -102,12 +101,10 @@ const UserSpecification = () => {
         <div css={styles.general}>
             <div onClick={BtnClick} css={styles.profile}>
                 <div css={styles.menuBar}>
-                    {userType === 3 ? 
-                    <Link href={"/SuperAdminDashboard"} css={styles.menuItem}>
-                    داشبورد کنترل
-                    </Link>
-                    :
-                    <></> 
+                    {userType === 3 && 
+                        <Link href={"/SuperAdminDashboard/"} css={styles.menuItem}>
+                        داشبورد کنترل
+                        </Link>
                     }                    
                     <Link href={"/Profile"} css={styles.menuItem}>
                         پروفایل

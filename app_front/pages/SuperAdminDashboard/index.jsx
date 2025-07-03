@@ -9,11 +9,14 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { Loading } from "@/components";
 import { notifyEngine } from "@/utils/notifyEngine";
+import { getLogged,getType } from "@/utils/auth";
 
 const SuperAdminDashboard = () => {
   const [activeSection, setActiveSection] = useState("accounting");
   const router = useRouter();
   const auth = useSelector((state) => state.auth);
+  const loggedStatus = getLogged()
+  const userType = Number(getType())
 
   const handleButtonClick = (section) => {
     setActiveSection(section);
@@ -21,23 +24,15 @@ const SuperAdminDashboard = () => {
   
 
   useEffect(() => {
-    // فقط زمانی که بررسی اولیه لاگین تمام شد، منطق را اجرا کن
     if (auth.loading === false) {
-      // اگر کاربر لاگین نبود یا نوع او Admin (یعنی 2) نبود
-      console.log("DASHBOARD SADMIN :",auth.type)
-      if (!auth.logged || auth.type !== 3) { // <-- اصلاح شد به 2
+      if (!loggedStatus || userType !== 3) { 
         router.push('/'); 
-        notifyEngine("شما اجازه دسترسی به این صفحه را ندارید", "error");
-        
+        notifyEngine("شما اجازه دسترسی به این صفحه را ندارید", "error");        
       }
     }
-    // --- تغییر اصلی و حیاتی ---
-    // وابستگی‌ها اضافه شدند تا با تغییر وضعیت لاگین، این هوک دوباره اجرا شود
-  }, [auth.logged, auth.loading, auth.type, router]);
+  }, [loggedStatus, auth.loading, userType, router]);
 
-  // تا زمانی که وضعیت لاگین در حال بررسی است یا کاربر مجوز ندارد، لودینگ نمایش بده
-  // این شرط هم باید متناسب با نوع کاربر اصلاح شود
-  if (auth.loading || !auth.logged || auth.type !== 3) { // <-- اصلاح شد به 2
+  if (auth.loading || !loggedStatus || userType !== 3) { 
     return <Loading />;
   }
 
