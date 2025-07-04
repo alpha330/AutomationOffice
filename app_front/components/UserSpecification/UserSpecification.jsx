@@ -1,23 +1,24 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { useDispatch } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import { LOGOUT_ACTION } from "@/actions/auth";
 import { useEffect, useState } from "react";
 import { notifyEngine } from "@/utils/notifyEngine";
-import { getLogged,getToken,getType } from "@/utils/auth";
-import { getProfile } from "@/utils/profile";
+import { logoutSuccess } from "@/store/authSlice";
+import { useRouter } from "next/router";
 import Link from "next/link";
 
 const UserSpecification = () => {
     const dispatch = useDispatch();
     const [showMenu,setShowMenu] = useState(false)
-    const loggedStatus = getLogged()
-    const userType = Number(getType())
-    const userToken = getToken()
-    const userProfile = getProfile()
+    const auth = useSelector((state) => state.auth);
+    const profile = useSelector((state) => state.profile);
+    const [loginStatus, setLoginStatus] = useState(false);
+    const route = useRouter();
 
     useEffect(() => {
-    }, []);
+        setLoginStatus(auth.logged);
+    }, [auth.logged]);
 
     const BtnClick = () =>{
         if(showMenu){
@@ -30,12 +31,13 @@ const UserSpecification = () => {
 
     const handleLogout = () => {
         const header = {
-          "Authorization": `token ${userToken}`,
+          "Authorization": `token ${auth.token}`,
           "Content-Type": "application/json",
         };
         dispatch(LOGOUT_ACTION(header));
-        notifyEngine("خروج با موفقیت انجام شد", "success");
+        dispatch(logoutSuccess());
         setLoginStatus(false);
+        notifyEngine("خروج با موفقیت انجام شد", "success");
       };
 
     const styles = {
@@ -45,7 +47,7 @@ const UserSpecification = () => {
             height:100%;
             background-color: rgba(0, 0, 0, 0.57);
             font-size: 1.5rem;
-            display:${loggedStatus ? 'flex' : 'none'};
+            display:${loginStatus ? 'flex' : 'none'};
             align-items: center;
             justify-content: center;
             flex-direction:column;
@@ -56,7 +58,7 @@ const UserSpecification = () => {
         profile: css`
             height: 2.5rem;
             border-radius: 50%;
-            background-image:url(${userProfile !== null ? userProfile.image :"./images/logo.jpg"});
+            background-image:url(${profile.image !== null ? profile.image :"./images/logo.jpg"});
             width: 2.5rem;
             cursor:pointer;
             position:absolute;
@@ -96,21 +98,25 @@ const UserSpecification = () => {
             
         `
       };
+
+    const SuperAdminDash = () => {
+        route.push("/SuperAdminDashboard");
+    };
     return (
         <div css={styles.general}>
             <div onClick={BtnClick} css={styles.profile}>
                 <div css={styles.menuBar}>
-                    {userType === 3 && 
-                        <Link href={"/SuperAdminDashboard/"} css={styles.menuItem}>
+                    {auth.type === 3 && 
+                        <div onClick={SuperAdminDash} css={styles.menuItem}>
                         داشبورد کنترل
-                        </Link>
+                        </div>
                     }                    
-                    <Link href={"/Profile"} css={styles.menuItem}>
+                    <div  css={styles.menuItem}>
                         پروفایل
-                    </Link>
-                    <Link href={"/"} onClick={handleLogout} css={styles.menuItem}>
+                    </div>
+                    <div  onClick={handleLogout} css={styles.menuItem}>
                         خروج
-                    </Link>
+                    </div>
                 </div>
             </div>
         </div>

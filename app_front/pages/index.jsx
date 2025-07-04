@@ -27,7 +27,7 @@ const Home = () => {
       }
        
   }
-  }, []); 
+  }, [auth.logged]); 
 
 
   return (

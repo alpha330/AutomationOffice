@@ -5,36 +5,29 @@ import Head from "next/head";
 import { useState } from "react";
 import AdminAccounting from "@/containers/AdminAccounting/AdminAccounting";
 import { useSelector } from "react-redux";
-import { useRouter } from "next/router";
+import {useRouter}  from "next/router";
 import { useEffect } from "react";
-import { Loading } from "@/components";
 import { notifyEngine } from "@/utils/notifyEngine";
-import { getLogged,getType } from "@/utils/auth";
 
 const SuperAdminDashboard = () => {
   const [activeSection, setActiveSection] = useState("accounting");
   const router = useRouter();
   const auth = useSelector((state) => state.auth);
-  const loggedStatus = getLogged()
-  const userType = Number(getType())
+  const [loginStatus, setLoginStatus] = useState(auth.logged);
 
   const handleButtonClick = (section) => {
     setActiveSection(section);
   };
   
-
   useEffect(() => {
-    if (auth.loading === false) {
-      if (!loggedStatus || userType !== 3) { 
-        router.push('/'); 
-        notifyEngine("شما اجازه دسترسی به این صفحه را ندارید", "error");        
-      }
+    setLoginStatus(auth.logged);
+    if (!loginStatus) {
+      notifyEngine("شما باید وارد حساب کاربری خود شوید", "error");
+      router.push('/');
+    } else {;
     }
-  }, [loggedStatus, auth.loading, userType, router]);
+  }, [loginStatus, auth.logged, router]);
 
-  if (auth.loading || !loggedStatus || userType !== 3) { 
-    return <Loading />;
-  }
 
   const adminMainDashboard = css`
     width: 100%;
