@@ -3,7 +3,6 @@ import IndexSectionOne from "@/containers/IndexSectionOne/IndexSectionOne";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
-import { Loading } from "@/components";
 import { notifyEngine } from "@/utils/notifyEngine";
 
 
@@ -28,11 +27,8 @@ const Home = () => {
       }
        
   }
-  }, [auth.logged, auth.loading, auth.type, router]); 
+  }, []); 
 
-  // if (!auth.loading || auth.logged ) {
-  //   return <Loading />;
-  // }
 
   return (
     <>

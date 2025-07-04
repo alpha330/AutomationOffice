@@ -15,7 +15,6 @@ const UserSpecification = () => {
     const userType = Number(getType())
     const userToken = getToken()
     const userProfile = getProfile()
-    console.log("AVATAR SEC :",userProfile)
 
     useEffect(() => {
     }, []);
@@ -57,7 +56,7 @@ const UserSpecification = () => {
         profile: css`
             height: 2.5rem;
             border-radius: 50%;
-            background-image:url(${userProfile.image !== null ? userProfile.image :"./images/logo.jpg"});
+            background-image:url(${userProfile !== null ? userProfile.image :"./images/logo.jpg"});
             width: 2.5rem;
             cursor:pointer;
             position:absolute;
