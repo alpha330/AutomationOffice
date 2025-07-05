@@ -124,6 +124,9 @@ const Profile = () => {
                     <button onClick={() => handleButtonClick("profileInfo")} css={btnDiv(activeSection === "profileInfo")}>
                       <H5>اطلاعات کاربری</H5>
                     </button>
+                    <button onClick={() => handleButtonClick("profileInfoUpdate")} css={btnDiv(activeSection === "profileInfoUpdate")}>
+                      <H5>بروزرسانی اطلاعات کاربری</H5>
+                    </button>
                     <button onClick={() => handleButtonClick("avatarEdit")} css={btnDiv(activeSection === "avatarEdit")}>
                       <H5>بروزرسانی آواتار</H5>
                     </button>
