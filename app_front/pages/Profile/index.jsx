@@ -1,15 +1,16 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import Head from "next/head";
-import { H1 } from "@/components";
+import { H5,H1,PrfileInfo,ChangeAvatar } from "@/components";
 import { useEffect,useState} from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 const Profile = () => {
+    const [activeSection, setActiveSection] = useState("profileInfo");
     const router = useRouter()
     const auth = useSelector((state)=>(state.auth))
-    const [loginStatus, setLoginStatus] = useState(false);
+    const [loginStatus, setLoginStatus] = useState(auth.logged);
     const mainDivContact = css`
         width:100%;
         height:100vh;
@@ -37,10 +38,38 @@ const Profile = () => {
         top:5%;
         animation: topToDown 1s ease-in;
         `
-    
+    const ProfileBody = css`
+        width:100%;
+        height:73%;
+        position: fixed;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        flex-direction:row;  
+        animation: bottomToUp 1s ease-in;
+        top:23%;
+        background-color: rgba(0, 0, 0, 0.57);
+
+        `
+
+    const rightBody = css`
+        width:10%;
+        height:90%;
+        border-left: 1px solid rgb(133, 133, 133);
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        flex-direction: column;
+
+    `
+    const leftBody = css`
+        width:90%;
+        height:90%;
+    `
+
     useEffect(()=>{
-        setLoginStatus(Boolean(auth.token && auth.email));
-        if(loginStatus){
+        setLoginStatus(auth.logged);
+        if(!loginStatus){
             switch (auth.type) {
                 case 3: router.push("/SuperAdminDashboard"); break;
                 case 2: router.push("/AdminDashboard"); break;
@@ -49,6 +78,30 @@ const Profile = () => {
             }
         }
     },[loginStatus])
+
+    const handleButtonClick = (section) => {  setActiveSection(section);};
+
+    const btnDiv = (isActive) => css`
+      width: 80%;
+      height: fit-content;
+      margin: 1rem 0;
+      ${isActive
+        ? "border-bottom: 1px solid white; background-color: white; border-bottom: 1px solid rgb(90, 2, 2); border-radius: 5rem; color: rgb(4, 0, 58);"
+        : "border-bottom: 0px solid white;"}
+      border: 0px solid white;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      cursor: pointer;
+      background-color: transparent;
+      color:white;
+      &:hover {
+        border-bottom: 1px solid rgb(90, 2, 2);
+        background-color: white;
+        color: rgb(4, 0, 58);
+        border-radius: 5rem;
+      }
+    `;
 
     return(
         <>
@@ -60,7 +113,30 @@ const Profile = () => {
         </Head>
         <div css={mainDivContact}>
             <div css={headerDivContact}>
-                <H1>پروفایل {}</H1>
+               <H1>پروفایل کاربری</H1>
+            </div>
+            <div css={ProfileBody}>
+                <div css={leftBody}>
+                    {activeSection === "profileInfo" && <PrfileInfo show={true} />}
+                    {activeSection === "avatarEdit" && <ChangeAvatar show={true} />}
+                </div>
+                <div css={rightBody}>
+                    <button onClick={() => handleButtonClick("profileInfo")} css={btnDiv(activeSection === "profileInfo")}>
+                      <H5>اطلاعات کاربری</H5>
+                    </button>
+                    <button onClick={() => handleButtonClick("avatarEdit")} css={btnDiv(activeSection === "avatarEdit")}>
+                      <H5>بروزرسانی آواتار</H5>
+                    </button>
+                    <button onClick={() => handleButtonClick("changePassword")} css={btnDiv(activeSection === "changePassword")}>
+                      <H5>تغییر رمز عبور</H5>
+                    </button>
+                    <button onClick={() => handleButtonClick("changeEmail")} css={btnDiv(activeSection === "changeEmail")}>
+                      <H5>تغییر ایمیل</H5>
+                    </button>
+                     <button onClick={() => handleButtonClick("changeMobile")} css={btnDiv(activeSection === "changeMobile")}>
+                      <H5>تغییر شماره موبایل</H5>
+                    </button>
+                </div>
             </div>
         </div>
 

@@ -5,29 +5,17 @@ import { LOGOUT_ACTION } from "@/actions/auth";
 import { useEffect, useState } from "react";
 import { notifyEngine } from "@/utils/notifyEngine";
 import { logoutSuccess } from "@/store/authSlice";
-import { useRouter } from "next/router";
 import Link from "next/link";
 
 const UserSpecification = () => {
     const dispatch = useDispatch();
-    const [showMenu,setShowMenu] = useState(false)
     const auth = useSelector((state) => state.auth);
     const profile = useSelector((state) => state.profile);
     const [loginStatus, setLoginStatus] = useState(false);
-    const route = useRouter();
 
     useEffect(() => {
         setLoginStatus(auth.logged);
     }, [auth.logged]);
-
-    const BtnClick = () =>{
-        if(showMenu){
-            setShowMenu(false)
-        }else{
-            setShowMenu(true)
-        }
-    }
-
 
     const handleLogout = () => {
         const header = {
@@ -55,6 +43,7 @@ const UserSpecification = () => {
             transition: all 400ms ease-in;
             margin-right: 3rem;
         `,
+
         profile: css`
             height: 2.5rem;
             border-radius: 50%;
@@ -64,6 +53,11 @@ const UserSpecification = () => {
             position:absolute;
             transition: all 400ms ease-in;
             border:1px solid #008cff;
+            &:hover {
+                div {
+                    display: flex;
+                }
+            }
         `
         ,
         menuBar: css`
@@ -76,7 +70,7 @@ const UserSpecification = () => {
             transition: all 400ms ease-in;
             border:1px solid #008cff;
             border-radius:1rem;
-            display:${showMenu ? "flex ;" : "none ;"};
+            display: none;
             flex-direction:column;
             animation: HeadFootAnime 600ms ease-in;
             align-items: center;
@@ -99,24 +93,23 @@ const UserSpecification = () => {
         `
       };
 
-    const SuperAdminDash = () => {
-        route.push("/SuperAdminDashboard");
-    };
+
     return (
         <div css={styles.general}>
-            <div onClick={BtnClick} css={styles.profile}>
+            <div css={styles.profile}>
                 <div css={styles.menuBar}>
-                    {auth.type === 3 && 
-                        <div onClick={SuperAdminDash} css={styles.menuItem}>
+                    {auth.type === 3 ?
+                        <Link href='/SuperAdminDashboard' css={styles.menuItem}>
                         داشبورد کنترل
-                        </div>
+                        </Link>
+                        : null
                     }                    
-                    <div  css={styles.menuItem}>
+                    <Link href='/Profile' css={styles.menuItem}>
                         پروفایل
-                    </div>
-                    <div  onClick={handleLogout} css={styles.menuItem}>
+                    </Link>
+                    <Link href='/' onClick={handleLogout} css={styles.menuItem}>
                         خروج
-                    </div>
+                    </Link>
                 </div>
             </div>
         </div>
