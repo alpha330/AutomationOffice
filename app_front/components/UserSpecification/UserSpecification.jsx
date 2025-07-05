@@ -48,6 +48,9 @@ const UserSpecification = () => {
             height: 2.5rem;
             border-radius: 50%;
             background-image:url(${profile.image !== null ? profile.image :"./images/logo.jpg"});
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;            
             width: 2.5rem;
             cursor:pointer;
             position:absolute;

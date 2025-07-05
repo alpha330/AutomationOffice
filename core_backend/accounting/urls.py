@@ -18,5 +18,5 @@ urlpatterns = [
     path('reset-password/<str:token>/', views.ResetPasswordView.as_view(), name='reset_password'),
     path('verify-user/<str:token>/', views.VerifyLoggedInUser.as_view(), name='verify_user'),
     path('my-profile/', views.MyProfileView.as_view(), name='my-profile'),
-    path('my-profile/update/<int:id>/', views.MyProfileUpdate.as_view(), name='my-profile-update'),
+    path('my-profile/update/<int:id>/', views.MyProfileUpdateView.as_view(), name='my-profile-update'),
 ]

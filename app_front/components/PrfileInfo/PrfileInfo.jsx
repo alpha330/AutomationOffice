@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { useSelector } from "react-redux";
-import { H3,H5,H4 } from "@/components/TypoGraphy";
+import { H5,H4 } from "@/components/TypoGraphy";
 
 const ProfileInfo = ({show}) => {
     const profile = useSelector((state) => state.profile);

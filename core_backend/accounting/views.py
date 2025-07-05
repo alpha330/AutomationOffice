@@ -16,6 +16,9 @@ from rest_framework import status,permissions
 from user_agents import parse
 from rest_framework.exceptions import NotFound
 from .validators import validate_iranian_cellphone_number,is_valid_email
+from rest_framework.parsers import MultiPartParser, FormParser
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -36,6 +39,7 @@ class TempAuthenticatingViewSet(viewsets.ModelViewSet):
     queryset = TempCodeAuthenticating.objects.all()
     serializer_class = TempAuthenticatingSerializer
     permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser] 
 
     def get_queryset(self):
         if self.request.user.is_superuser:
@@ -77,68 +81,37 @@ class MyProfileView(generics.RetrieveAPIView):
         except Profile.DoesNotExist:
             raise NotFound("پروفایلی برای این کاربر یافت نشد.")
         
-class MyProfileUpdate(generics.GenericAPIView):
-    
-    model = Profile
+class MyProfileUpdateView(generics.UpdateAPIView):
     serializer_class = ProfileSerializerUpdate
     permission_classes = [permissions.IsAuthenticated]
-    
+    http_method_names = ['patch']
+    parser_classes = [MultiPartParser, FormParser]  
+
+    def get_object(self):
+        queryset = Profile.objects.filter(user=self.request.user)
+        obj = get_object_or_404(queryset)
+        return obj
+
+    @swagger_auto_schema(
+        request_body=ProfileSerializerUpdate,  
+        operation_description="بروزرسانی پروفایل کاربر شامل نام، تصویر، امضا و تاریخ تولد"
+    )
     def patch(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            first_name = serializer.data.get("first_name")
-            last_name = serializer.data.get("last_name")
-            phone_number = serializer.data.get("phone_number")
-            if first_name and last_name and phone_number:
-                user_id = request.user.email
-                user_obj = User.objects.get(email=user_id)
-                profile_obj = Profile.objects.filter(user=user_obj).first()
-                if profile_obj:
-                    profile_obj.first_name = first_name
-                    profile_obj.last_name = last_name
-                    profile_obj.phone_number = phone_number
-                    profile_obj.save()
-                    if serializer.data.get("image"):
-                        profile_obj.image = serializer.data.get("image")
-                        profile_obj.save()
-                    if serializer.data.get("signutures"):
-                        profile_obj.signitures = serializer.data.get("signutures")
-                        profile_obj.save()
-                    return Response({
-                        "message": "پروفایل بروزرسانی شد",
-                        "email":user_obj.email,
-                        "error":False,
-                        "status":"success",
-                        "code":"Profile updated"
-                        },
-                        status=status.HTTP_202_ACCEPTED
-                        )
-                else:
-                    return Response({
-                        "message": "پروفایلی یافت نشد",
-                        "error":True,
-                        "status":"fail",
-                        "code":"Profile not found"
-                        },
-                        status=status.HTTP_425_TOO_EARLY)
-                return Response({
-                    "message": "پروفایل بروزرسانی شد",
-                    "email":user_obj.email,
-                    "error":False,
-                    "status":"success",
-                    "code":"Profile updated"
-                    },
-                    status=status.HTTP_202_ACCEPTED
-                    )            
-            else:
-                return Response({
-                "message": "پروفایلی یافت نشد",
-                "error":True,
-                "status":"fail",
-                "code":"Profile not found"
-                },
-                status=status.HTTP_425_TOO_EARLY)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        print("FILES:", request.FILES)         # 👈 چاپ کن ببینی چیزی توش هست؟
+        print("image:", request.FILES.get('image'))
+        print("signitures:", request.FILES.get('signitures'))
+        response = super().partial_update(request, *args, **kwargs)
+
+        custom_response = {
+            "message": "پروفایل شما با موفقیت به‌روزرسانی شد.",
+            "error": False,
+            "status": "success",
+            "code": "Profile updated",
+            "data": response.data
+        }
+
+        return Response(custom_response, status=status.HTTP_200_OK)
+    
 
 class RegisterView(generics.GenericAPIView):
     """

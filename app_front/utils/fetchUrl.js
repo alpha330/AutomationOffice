@@ -5,12 +5,17 @@ const fetchUrl = async ({ url, method = "GET", data = [], headers = {} }) => {
         const options = {
           method,
           headers: {
-            'Content-Type': 'application/json',
-            ...headers,
+            ...headers
           },
         };
         if (["POST", "PUT", "PATCH", "DELETE"].includes(method.toUpperCase()) && data) {
-          options.body = JSON.stringify(data);
+          if (data instanceof FormData) {
+            options.body = data;
+            delete options.headers["Content-Type"];
+          } else {
+            options.body = JSON.stringify(data);
+            options.headers["Content-Type"] = "application/json";
+          }
         }
         const response = await fetch(url, options);
         // اگر response خالیه (مثل 204 No Content)

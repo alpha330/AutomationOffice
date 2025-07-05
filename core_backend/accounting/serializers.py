@@ -30,9 +30,15 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'first_name', 'last_name', 'phone_number', 'image',"signitures","date_of_birth" , 'created_date',"updated_date"]
 
 class ProfileSerializerUpdate(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False, allow_null=True, use_url=True)
+    signitures = serializers.ImageField(required=False, allow_null=True, use_url=True)
+    date_of_birth = serializers.DateField(required=False, allow_null=True)
+    first_name = serializers.CharField(max_length=255, required=False, allow_blank=True)
+    last_name = serializers.CharField(max_length=255, required=False, allow_blank=True)
+
     class Meta:
         model = Profile
-        fields = [ 'first_name', 'last_name', 'phone_number', 'image',"signitures","date_of_birth"]
+        fields = ['first_name', 'last_name', 'phone_number', 'image', 'signitures', 'date_of_birth']
 
 class RegisterSerializer(serializers.ModelSerializer):
     """
