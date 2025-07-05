@@ -39,7 +39,7 @@ const ProfileInfo = ({show}) => {
             </div>            
             <div css={{ gridColumn: '5 / 6',gridRow: '2/3', textAlign: 'center',display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <H5>نام </H5>
-                <H4>{profile.first_Name}</H4>
+                <H4>{profile.first_name}</H4>
             </div>
             <div css={{ gridColumn: '3/5',gridRow: '2/3', textAlign: 'center',display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <H5>نام خانوادگی</H5>

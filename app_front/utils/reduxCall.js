@@ -12,6 +12,7 @@ const reduxCall = async (
     headers = {},
     auth = false,
     customPayload = {},
+    mediaType = "application/json", // ← اضافه شده
     onSuccess = null, // ← اضافه شده
     onError = null,   // ← اگه خواستی به صورت سفارشی هندل کنی
   }
@@ -40,6 +41,7 @@ const reduxCall = async (
       method,
       data,
       headers: authHeaders,
+      mediaType, // ← ارسال نوع مدیا
     });
 
     // dispatch SUCCESS

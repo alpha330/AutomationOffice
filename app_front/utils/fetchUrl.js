@@ -1,4 +1,4 @@
-const fetchUrl = async ({ url, method = "GET", data = [], headers = {} }) => {
+const fetchUrl = async ({ url, method = "GET", data = [], headers = {}}) => {
   return new Promise(async (resolve, reject) => {
     try {
       setTimeout(async () => {

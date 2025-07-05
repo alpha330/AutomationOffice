@@ -6,9 +6,9 @@ import RingLoader  from "react-spinners/RingLoader";
 const Button =({children,type,onCliCkAction=()=>{},loading=false,disabled = false,fontSize=""})=>{
 
     const btnStyle = css`
-        width:100%;
-        height:100%;
-        appeareance:none;
+        width:fit-content;
+        height:fit-content;
+        appearance:none;
         background-color: rgba(0, 0, 0, 0.57);
         border-radius:15px 5px 15px 5px;    
         cursor:pointer;
@@ -19,6 +19,7 @@ const Button =({children,type,onCliCkAction=()=>{},loading=false,disabled = fals
         display:flex;
         align-items:center;
         justify-content:center;
+        padding: 1rem 2rem;
         &:disabled{
             cursor:normal;
             background-color: rgba(34, 36, 53, 0.84);

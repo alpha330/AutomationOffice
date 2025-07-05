@@ -13,4 +13,5 @@ export {default as ShamsiDateAndTime} from "./ShamsiDateAndTime/ShamsiDateAndTim
 export {default as UserSpecification} from "./UserSpecification/UserSpecification";
 export {default as PrfileInfo} from "./PrfileInfo/PrfileInfo";
 export {default as ChangeAvatar} from "./ChangeAvatar/ChangeAvatar";
+export {default as ChangeProfInfo} from "./ChangeProfInfo/ChangeProfInfo";
 export { H1,H2,H3,H4,H5,Small,Paragraph } from "./TypoGraphy";

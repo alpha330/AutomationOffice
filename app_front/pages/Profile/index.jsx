@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import Head from "next/head";
-import { H5,H1,PrfileInfo,ChangeAvatar } from "@/components";
+import { H5,H1,PrfileInfo,ChangeAvatar,ChangeProfInfo } from "@/components";
 import { useEffect,useState} from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
@@ -119,6 +119,7 @@ const Profile = () => {
                 <div css={leftBody}>
                     {activeSection === "profileInfo" && <PrfileInfo show={true} />}
                     {activeSection === "avatarEdit" && <ChangeAvatar show={true} />}
+                    {activeSection === "profileInfoUpdate" && <ChangeProfInfo show={true} />}
                 </div>
                 <div css={rightBody}>
                     <button onClick={() => handleButtonClick("profileInfo")} css={btnDiv(activeSection === "profileInfo")}>
